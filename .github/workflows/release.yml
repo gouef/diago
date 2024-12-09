@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   release:
@@ -27,8 +28,6 @@ jobs:
         id: release_type
         run: |
           TAG_NAME=${{ github.ref_name }}
-          
-          # Zkontrolujeme, jestli tag obsahuje "beta" nebo "rc"
           if [[ "$TAG_NAME" == *beta* ]]; then
             echo "release_type=Pre-release (Beta)" >> $GITHUB_ENV
             echo "prerelease=true" >> $GITHUB_ENV

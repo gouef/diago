@@ -1,6 +1,7 @@
 package extensions
 
 import (
+	_ "embed"
 	"github.com/gin-gonic/gin"
 	"github.com/gouef/router"
 	"html/template"

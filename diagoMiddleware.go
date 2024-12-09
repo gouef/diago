@@ -2,6 +2,7 @@ package diago
 
 import (
 	"bytes"
+	_ "embed"
 	"github.com/gin-gonic/gin"
 	"github.com/gouef/router"
 	"html/template"

@@ -1,6 +1,7 @@
 package extensions
 
 import (
+	_ "embed"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"html/template"

@@ -1,22 +1,22 @@
-package templates
+package diago
 
 import (
 	_ "embed"
 )
 
-//go:embed diago_panel.gohtml
+//go:embed templates/diago_panel.gohtml
 var DiagoPanelTemplate string
 
-//go:embed diago_latency_panel.gohtml
+//go:embed templates/latency/diago_latency_panel.gohtml
 var DiagoLatencyPanelTemplate string
 
-//go:embed diago_route_panel.gohtml
+//go:embed templates/route/diago_route_panel.gohtml
 var DiagoRoutePanelTemplate string
 
-//go:embed diago_route_panel_js.gohtml
+//go:embed templates/route/diago_route_panel_js.gohtml
 var DiagoRoutePanelJSTemplate string
 
-//go:embed diago_route_panel_popup.gohtml
+//go:embed templates/route/diago_route_panel_popup.gohtml
 var DiagoRoutePanelPopupTemplate string
 
 func GetDiagoPanelTemplate() string {

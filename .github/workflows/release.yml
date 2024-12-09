@@ -56,53 +56,49 @@ jobs:
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           if [ -z "$PREV_TAG" ]; then
             echo "No previous tag found, using initial commit."
-            COMMITS=$(git log --format="- %s (@%an)" HEAD)
+            COMMITS="<ul>"
+            while read -r commit_hash; do
+              COMMIT_MSG=$(git log -n 1 --pretty=format:"%s" "$commit_hash")
+              AUTHOR=$(git log -n 1 --pretty=format:"%an" "$commit_hash")
+              COMMITS+="<li>$COMMIT_MSG (@$AUTHOR)</li>"
+            done < <(git log --format="%H" HEAD)
+            COMMITS+="</ul>"
           else
             COMMITS="<ul>"
             declare -A FIXUPS
 
-            # Procházení commitů od posledního tagu
+            # Iterace přes všechny commity od posledního tagu
             while read -r commit_hash; do
               COMMIT_MSG=$(git log -n 1 --pretty=format:"%s" "$commit_hash")
-              commit_url="https://github.com/${{ github.repository }}/commit/$commit_hash"
-              AUTHOR=$(gh api "/repos/${{ github.repository }}/commits/$commit_hash" --jq '.author.login')
+              AUTHOR=$(git log -n 1 --pretty=format:"%an" "$commit_hash")
 
               # Kontrola, zda jde o fixup commit
               if [[ "$COMMIT_MSG" == fixup!* ]]; then
-                # Najít původní commit hash
                 ORIGINAL_HASH=$(git log -n 1 --format="%H" "$commit_hash"^)
                 FIXUPS["$ORIGINAL_HASH"]+="$commit_hash "
                 continue
               fi
 
-              # Přidání zprávy commitu
+              # Hledání uzavřených issue nebo PR pro tento commit
+              COMMIT_URL="https://github.com/${{ github.repository }}/commit/$commit_hash"
+              ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=closed" --jq "[.[] | select(.body | contains(\"$commit_url\"))][].html_url")
+              PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=closed" --jq "[.[] | select(.body | contains(\"$commit_url\"))][].html_url")
+
+              # Zpracování běžného commitu
               COMMITS+="<li>$COMMIT_MSG (@$AUTHOR)"
 
-              # Přidání fixup commitů, pokud existují
+              # Přidání fixup commitů k původnímu commitu, pokud existují
               if [[ -n "${FIXUPS[$commit_hash]}" ]]; then
-                COMMITS+=" (fixups: ${FIXUPS[$commit_hash]})"
+                FIXUP_HASHES=$(echo "${FIXUPS[$commit_hash]}" | tr ' ' ', ')
+                COMMITS+=" (fixups: $FIXUP_HASHES)"
               fi
 
-              # Vyhledání referencí v Issues
-              ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues" --jq "[.[] | select(.body and (.body | contains(\"$commit_url\")))][].html_url")
+              # Přidání odkazů na uzavřená issue nebo PR
               if [[ -n "$ISSUE_URLS" ]]; then
-                COMMITS+=" (Referenced in Issues: "
-                for ISSUE_URL in $ISSUE_URLS; do
-                  COMMITS+="[Link]($ISSUE_URL), "
-                done
-                COMMITS=${COMMITS%, }
-                COMMITS+=")"
+                COMMITS+=" (Referenced in Issues: $ISSUE_URLS)"
               fi
-
-              # Vyhledání referencí v PRs
-              PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls" --jq "[.[] | select(.body and (.body | contains(\"$commit_url\")))][].html_url")
               if [[ -n "$PR_URLS" ]]; then
-                COMMITS+=" (Referenced in PRs: "
-                for PR_URL in $PR_URLS; do
-                  COMMITS+="[Link]($PR_URL), "
-                done
-                COMMITS=${COMMITS%, }
-                COMMITS+=")"
+                COMMITS+=" (Referenced in PRs: $PR_URLS)"
               fi
 
               COMMITS+="</li>"
@@ -110,6 +106,7 @@ jobs:
             COMMITS+="</ul>"
           fi
 
+          # Odstranění nechtěných znaků
           COMMITS=$(echo "$COMMITS" | sed 's/[[:cntrl:]]//g')
           echo "commits=$COMMITS" >> $GITHUB_ENV
         env:

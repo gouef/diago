@@ -1,0 +1,97 @@
+{{define "diagoPanel"}}
+<div id="diago-panel" style="position: fixed; bottom: 10px; right: 10px; width: 400px; background: #333; color: white; padding: 5px 15px; font-family: monospace; z-index: 99999; box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.5); border-top: 2px solid #444; border-radius: 4px 4px 4px 4px; cursor: move; transition: none; height: 25px;">
+    <ul style="">
+        <li style="font-size: 14px;">
+            <strong>DIAGO</strong>
+        </li>
+        {{range .ExtensionsPanelHtml}}
+            {{.}}
+        {{end}}
+
+        <li onclick="closeDiago()" style="background: none; border: none; color: white; font-size: 14px; cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 512 512">
+                <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                <path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"/>
+            </svg>
+        </li>
+    </ul>
+</div>
+
+{{range .ExtensionsHtml}}
+        {{.}}
+{{end}}
+
+<script>
+    function closeDiago() {
+        document.getElementById("diago-panel").style.display = "none";
+    }
+
+    let diagoPanel = document.getElementById("diago-panel");
+    diagoPanel.onmousedown = function (e) {
+        let shiftX = e.clientX - diagoPanel.getBoundingClientRect().left;
+        let shiftY = e.clientY - diagoPanel.getBoundingClientRect().top;
+
+        document.onmousemove = function (e) {
+            // Zajištění, že diago-panel nebude přetahován mimo obrazovku
+            let newX = e.clientX - shiftX;
+            let newY = e.clientY - shiftY;
+
+            // Omezíme horizontální pohyb tak, aby se diago-panel nevešel mimo obrazovku
+            if (newX < 0) newX = 0;
+            if (newX + diagoPanel.offsetWidth > window.innerWidth) {
+                newX = window.innerWidth - diagoPanel.offsetWidth;
+            }
+
+            // Omezíme vertikální pohyb tak, aby se diago-panel nevešel mimo obrazovku
+            if (newY < 0) newY = 0;
+            if (newY + diagoPanel.offsetHeight > window.innerHeight) {
+                newY = window.innerHeight - diagoPanel.offsetHeight;
+            }
+
+            // Nastavení nové pozice
+            diagoPanel.style.left = newX + 'px';
+            diagoPanel.style.top = newY + 'px';
+        };
+
+        document.onmouseup = function () {
+            document.onmousemove = null;
+            document.onmouseup = null;
+        };
+    };
+
+    diagoPanel.ondragstart = function () {
+        return false;
+    };
+</script>
+<style>
+    #diago-panel{
+        > ul {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            > li {
+                display: flex;
+                align-items: center;
+                height: 100%;
+                > svg {
+                    padding-right: 5px;
+                }
+            }
+        }
+    }
+    /* CSS animace pro otáčení SVG ikony */
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+{{range .ExtensionsJSHtml}}
+    {{.}}
+{{end}}
+{{end}}

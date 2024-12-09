@@ -59,7 +59,12 @@ jobs:
             COMMITS="<ul>"
             while read -r commit_hash; do
               COMMIT_MSG=$(git log -n 1 --pretty=format:"%s" "$commit_hash")
-              AUTHOR=$(git log -n 1 --pretty=format:"%an" "$commit_hash")
+              AUTHOR_EMAIL=$(git log -n 1 --pretty=format:"%ae" "$commit_hash")
+
+              # Získání GitHub username z API
+              AUTHOR_USERNAME=$(gh api "/search/users?q=$AUTHOR_EMAIL+in:email" --jq ".items[0].login" || echo "UnknownUser")
+
+              AUTHOR=$AUTHOR_USERNAME)
               COMMITS+="<li>$COMMIT_MSG (@$AUTHOR)</li>"
             done < <(git log --format="%H" HEAD)
             COMMITS+="</ul>"
@@ -70,7 +75,11 @@ jobs:
             # Iterace přes všechny commity od posledního tagu
             while read -r commit_hash; do
               COMMIT_MSG=$(git log -n 1 --pretty=format:"%s" "$commit_hash")
-              AUTHOR=$(git log -n 1 --pretty=format:"%an" "$commit_hash")
+              AUTHOR_EMAIL=$(git log -n 1 --pretty=format:"%ae" "$commit_hash")
+
+              # Získání GitHub username z API
+              AUTHOR_USERNAME=$(gh api "/search/users?q=$AUTHOR_EMAIL+in:email" --jq ".items[0].login" || echo "UnknownUser")
+              AUTHOR=$AUTHOR_USERNAME
 
               # Kontrola, zda jde o fixup commit
               if [[ "$COMMIT_MSG" == fixup!* ]]; then

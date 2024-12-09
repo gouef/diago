@@ -77,7 +77,7 @@ func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 
 func generateDiagoPanelHTML(data DiagoData) (string, error) {
 
-	tpl, err := template.New("diagoPanel").ParseFiles(GetDiagoPanelTemplate())
+	tpl, err := template.New("diagoPanel").Parse(GetDiagoPanelTemplate())
 	if err != nil {
 		return "", err
 	}

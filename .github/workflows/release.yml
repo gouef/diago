@@ -79,3 +79,5 @@ jobs:
             ${{ env.commits }}
           draft: false
           prerelease: ${{ env.prerelease }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

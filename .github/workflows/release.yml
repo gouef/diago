@@ -71,13 +71,25 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create release
-        uses: actions/create-release@v1
+        uses: ncipollo/release-action@v1
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: ${{ github.ref_name }} - ${{ env.release_type }}
+          tag: ${{ github.ref_name }}
           body: |
             ${{ env.commits }}
           draft: false
           prerelease: ${{ env.prerelease }}
+          name: ${{ github.ref_name }} - ${{ env.release_type }}
+
+#      - name: Create release
+#        uses: actions/create-release@v1
+#        env:
+#          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: ${{ github.ref_name }}
+#          release_name: ${{ github.ref_name }} - ${{ env.release_type }}
+#          body: |
+#            ${{ env.commits }}
+#          draft: false
+#          prerelease: ${{ env.prerelease }}

@@ -62,13 +62,13 @@ jobs:
             while read -r commit_hash; do
               COMMIT_MSG=$(git log -n 1 --pretty=format:"%s" "$commit_hash")
               AUTHOR=$(gh api "/repos/${{ github.repository }}/commits/$commit_hash" --jq '.author.login')
-
+              COMMITS+="<li>"
               # Pokud commit je fixup, připojíme ho k původnímu commit message
               if [[ "$COMMIT_MSG" == fixup!* ]]; then
                 ORIGINAL_COMMIT_MSG=$(git log -n 1 --pretty=format:"%s" "$commit_hash"^)
-                COMMITS+="<li>$ORIGINAL_COMMIT_MSG (fixup) (@$AUTHOR)</li>"
+                COMMITS+="$ORIGINAL_COMMIT_MSG (fixup) (@$AUTHOR)"
               else
-                COMMITS+="<li>$COMMIT_MSG (@$AUTHOR)</li>"
+                COMMITS+="$COMMIT_MSG (@$AUTHOR)"
               fi
 
               # Prohledáme všechny komentáře v PR/Issue pro zmínky na commit
@@ -101,6 +101,7 @@ jobs:
               if [[ -n "$COMMENT_LINKS" ]]; then
                 COMMITS+=" (Referenced in Issues: $COMMENT_LINKS)"
               fi
+              COMMITS+="</li>"
             done < <(git log --format="%H" $PREV_TAG..HEAD)
             COMMITS+="</ul>"
           fi

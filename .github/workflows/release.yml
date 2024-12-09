@@ -59,16 +59,29 @@ jobs:
             COMMITS=$(git log --format="- %s (@%an)" HEAD)
           else
             COMMITS="<ul>"
+            declare -A FIXUPS
+          
             while read -r commit_hash; do
               COMMIT_MSG=$(git log -n 1 --pretty=format:"%s" "$commit_hash")
+              # Převod commit hash na URL formát
+              commit_url="https://github.com/${{ github.repository }}/commit/$commit_hash"
               AUTHOR=$(gh api "/repos/${{ github.repository }}/commits/$commit_hash" --jq '.author.login')
               COMMITS+="<li>"
-              # Pokud commit je fixup, připojíme ho k původnímu commit message
+          
+              # Kontrola, zda jde o fixup commit
               if [[ "$COMMIT_MSG" == fixup!* ]]; then
-                ORIGINAL_COMMIT_MSG=$(git log -n 1 --pretty=format:"%s" "$commit_hash"^)
-                COMMITS+="$ORIGINAL_COMMIT_MSG (fixup) (@$AUTHOR)"
-              else
-                COMMITS+="$COMMIT_MSG (@$AUTHOR)"
+                # Najít původní commit hash
+                ORIGINAL_HASH=$(git log -n 1 --format="%H" "$commit_hash"^)
+                FIXUPS["$ORIGINAL_HASH"]+="$commit_hash "
+                continue
+              fi
+              
+              COMMITS+="$COMMIT_MSG (@$AUTHOR)"
+          
+          
+              # Přidání fixup commitů, pokud existují
+              if [[ -n "${FIXUPS[$commit_hash]}" ]]; then
+                COMMITS+=" (fixups: ${FIXUPS[$commit_hash]})"
               fi
           
               echo "Hledání commit_hash v Issues a PRs"
@@ -78,14 +91,14 @@ jobs:
               COMMENT_LINKS=""
               echo "$COMMENT_LINKS"
               # Hledání v issue
-              ISSUE_COMMENTS=$(gh api "/repos/${{ github.repository }}/issues/comments?per_page=100" --jq "[.[] | select(.body | contains(\"$commit_hash\"))]")
+              ISSUE_COMMENTS=$(gh api "/repos/${{ github.repository }}/issues/comments?per_page=100" --jq "[.[] | select(.body | contains(\"$commit_url\"))]")
           
               echo "ISSUE_COMMENTS"
               echo "$ISSUE_COMMENTS"
               if [[ -n "$ISSUE_COMMENTS" ]]; then
                 # Pro každé nalezené komentáře přidáme odkaz na issue
                 echo "ISSUE_URLS"
-                ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=all" --jq "[.[] | select(.body and (.body | type == \"string\") and (.body | contains(\"$commit_hash\")))][].html_url")
+                ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=all" --jq "[.[] | select(.body and (.body | type == \"string\") and (.body | contains(\"$commit_url\")))][].html_url")
           
                 echo "ISSUE_URLS CYCLE"
                 for ISSUE_URL in $ISSUE_URLS; do

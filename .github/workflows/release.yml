@@ -83,22 +83,18 @@ jobs:
               COMMIT_URL="https://github.com/${{ github.repository }}/commit/$commit_hash"
               echo "Checking commit: $COMMIT_URL"
           
-              ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=closed" --jq "[.[] | select(.body != null and .body | contains(\"$COMMIT_URL\"))][].html_url" || echo "")
-              PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=closed" --jq "[.[] | select(.body != null and .body | contains(\"$COMMIT_URL\"))][].html_url" || echo "")
-
+              ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=all" --jq "[.[] | select(.body != null and .body | contains(\"$COMMIT_URL\"))][].html_url" || echo "")
+              ISSUE_COMMENT_URLS=$(gh api "/repos/${{ github.repository }}/issues/comments" --jq "[.[] | select(.body != null and .body | test(\"(Resolved|Close): $COMMIT_URL\"))][].html_url" || echo "")
+              PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=all" --jq "[.[] | select(.body != null and .body | contains(\"$COMMIT_URL\"))][].html_url" || echo "")
+              REFERENCES="$ISSUE_URLS $ISSUE_COMMENT_URLS"
+          
               # Zpracování běžného commitu
               COMMITS+="<li>$COMMIT_MSG (@$AUTHOR)"
-
-              # Přidání fixup commitů k původnímu commitu, pokud existují
-              if [[ -n "${FIXUPS[$commit_hash]}" ]]; then
-                FIXUP_HASHES=$(echo "${FIXUPS[$commit_hash]}" | tr ' ' ', ')
-                COMMITS+=" (fixups: $FIXUP_HASHES)"
+          
+              if [[ -n "$REFERENCES" ]]; then
+                COMMITS+=" (Referenced in: $REFERENCES)"
               fi
-
-              # Přidání odkazů na uzavřená issue nebo PR
-              if [[ -n "$ISSUE_URLS" ]]; then
-                COMMITS+=" (Referenced in Issues: $ISSUE_URLS)"
-              fi
+          
               if [[ -n "$PR_URLS" ]]; then
                 COMMITS+=" (Referenced in PRs: $PR_URLS)"
               fi

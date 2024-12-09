@@ -85,7 +85,7 @@ jobs:
               if [[ -n "$ISSUE_COMMENTS" ]]; then
                 # Pro každé nalezené komentáře přidáme odkaz na issue
                 echo "ISSUE_URLS"
-                ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=all" --jq "[.[] | select(.body and .body | contains(\"$commit_hash\"))][].html_url")
+                ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=all" --jq "[.[] | select(.body and (.body | type == \"string\") and (.body | contains(\"$commit_hash\")))][].html_url")
           
                 echo "ISSUE_URLS CYCLE"
                 for ISSUE_URL in $ISSUE_URLS; do
@@ -102,7 +102,8 @@ jobs:
               echo "$PR_COMMENTS"
               if [[ -n "$PR_COMMENTS" ]]; then
                 # Pro každé nalezené komentáře přidáme odkaz na PR
-                PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=all" --jq "[.[] | select(.body | contains(\"$commit_hash\"))][].html_url")
+                PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=all" --jq "[.[] | select(.body and (.body | type == \"string\") and (.body | contains(\"$commit_hash\")))][].html_url")
+
                 for PR_URL in $PR_URLS; do
                   PR_LINKS+="[Link]($PR_URL), "
                 done

@@ -84,17 +84,21 @@ jobs:
               echo "$ISSUE_COMMENTS"
               if [[ -n "$ISSUE_COMMENTS" ]]; then
                 # Pro každé nalezené komentáře přidáme odkaz na issue
+                echo "ISSUE_URLS"
                 ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=all" --jq "[.[] | select(.body | contains(\"$commit_hash\"))][].html_url")
+          
+                echo "ISSUE_URLS CYCLE"
                 for ISSUE_URL in $ISSUE_URLS; do
                   COMMENT_LINKS+="[Link]($ISSUE_URL), "
+                  echo "$COMMENT_LINKS"
                 done
               fi
 
+              echo "PR_COMMENTS"
               PR_LINKS=""
               # Hledání v pull requestech
               PR_COMMENTS=$(gh api "/repos/${{ github.repository }}/pulls/comments?per_page=100" --jq "[.[] | select(.body | contains(\"$commit_hash\"))]")
           
-              echo "PR_COMMENTS"
               echo "$PR_COMMENTS"
               if [[ -n "$PR_COMMENTS" ]]; then
                 # Pro každé nalezené komentáře přidáme odkaz na PR

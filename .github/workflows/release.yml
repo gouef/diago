@@ -81,10 +81,10 @@ jobs:
 
               # Hledání uzavřených issue nebo PR pro tento commit
               COMMIT_URL="https://github.com/${{ github.repository }}/commit/$commit_hash"
-              echo "$COMMIT_URL"
-              echo "$commit_hash"
-              ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=closed" --jq "[.[] | select(.body | contains(\"$COMMIT_URL\"))][].html_url")
-              PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=closed" --jq "[.[] | select(.body | contains(\"$COMMIT_URL\"))][].html_url")
+              echo "Checking commit: $COMMIT_URL"
+          
+              ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=closed" --jq "[.[] | select(.body != null and .body | contains(\"$COMMIT_URL\"))][].html_url" || echo "")
+              PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=closed" --jq "[.[] | select(.body != null and .body | contains(\"$COMMIT_URL\"))][].html_url" || echo "")
 
               # Zpracování běžného commitu
               COMMITS+="<li>$COMMIT_MSG (@$AUTHOR)"

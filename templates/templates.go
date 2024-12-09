@@ -7,16 +7,16 @@ import (
 //go:embed diago_panel.gohtml
 var DiagoPanelTemplate string
 
-//go:embed latency/diago_latency_panel.gohtml
+//go:embed diago_latency_panel.gohtml
 var DiagoLatencyPanelTemplate string
 
-//go:embed route/diago_route_panel.gohtml
+//go:embed diago_route_panel.gohtml
 var DiagoRoutePanelTemplate string
 
-//go:embed route/diago_route_panel_js.gohtml
+//go:embed diago_route_panel_js.gohtml
 var DiagoRoutePanelJSTemplate string
 
-//go:embed route/diago_route_panel_popup.gohtml
+//go:embed diago_route_panel_popup.gohtml
 var DiagoRoutePanelPopupTemplate string
 
 func GetDiagoPanelTemplate() string {

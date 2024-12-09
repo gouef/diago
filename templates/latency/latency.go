@@ -1,4 +1,4 @@
-package templates
+package latency
 
 import (
 	_ "embed"

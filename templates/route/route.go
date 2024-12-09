@@ -1,4 +1,4 @@
-package templates
+package route
 
 import (
 	_ "embed"

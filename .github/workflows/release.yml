@@ -70,7 +70,7 @@ jobs:
               else
                 COMMITS+="<li>$COMMIT_MSG (@$AUTHOR)</li>"
               fi
-          
+
               # Prohledáme všechny komentáře v PR/Issue pro zmínky na commit
               COMMENT_LINKS=""
               # Hledání v issue
@@ -82,7 +82,7 @@ jobs:
                   COMMENT_LINKS+="[Link]($ISSUE_URL), "
                 done
               fi
-          
+
               PR_LINKS=""
               # Hledání v pull requestech
               PR_COMMENTS=$(gh api "/repos/${{ github.repository }}/pulls/comments?per_page=100" --jq "[.[] | select(.body | contains(\"$commit_hash\"))]")
@@ -122,15 +122,3 @@ jobs:
           draft: false
           prerelease: ${{ env.prerelease }}
           name: ${{ github.ref_name }} - ${{ env.release_type }}
-
-#      - name: Create release
-#        uses: actions/create-release@v1
-#        env:
-#          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag_name: ${{ github.ref_name }}
-#          release_name: ${{ github.ref_name }} - ${{ env.release_type }}
-#          body: |
-#            ${{ env.commits }}
-#          draft: false
-#          prerelease: ${{ env.prerelease }}

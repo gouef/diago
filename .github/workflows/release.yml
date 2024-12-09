@@ -64,7 +64,7 @@ jobs:
               # Získání GitHub username z API
               AUTHOR_USERNAME=$(gh api "/search/users?q=$AUTHOR_EMAIL+in:email" --jq ".items[0].login" || echo "UnknownUser")
 
-              AUTHOR=$AUTHOR_USERNAME)
+              AUTHOR=$AUTHOR_USERNAME
               COMMITS+="<li>$COMMIT_MSG (@$AUTHOR)</li>"
             done < <(git log --format="%H" HEAD)
             COMMITS+="</ul>"

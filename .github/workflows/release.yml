@@ -62,7 +62,8 @@ jobs:
             while read -r commit_hash; do
               COMMIT_MSG=$(git log -n 1 --pretty=format:"%s" "$commit_hash")
               AUTHOR=$(gh api "/repos/${{ github.repository }}/commits/$commit_hash" --jq '.author.login')
-              COMMITS+="- $COMMIT_MSG (@$AUTHOR)\n"
+              COMMITS+="- $COMMIT_MSG (@$AUTHOR)"
+              COMMITS+=$'\n'
             done < <(git log --format="%H" $PREV_TAG..HEAD)
           fi
           

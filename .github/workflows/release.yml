@@ -58,12 +58,13 @@ jobs:
             echo "No previous tag found, using initial commit."
             COMMITS=$(git log --format="- %s (@%an)" HEAD)
           else
-            COMMITS=""
+            COMMITS="<ul>"
             while read -r commit_hash; do
               COMMIT_MSG=$(git log -n 1 --pretty=format:"%s" "$commit_hash")
               AUTHOR=$(gh api "/repos/${{ github.repository }}/commits/$commit_hash" --jq '.author.login')
-              COMMITS+="- $COMMIT_MSG (@$AUTHOR)<br>"
+              COMMITS+="<li>$COMMIT_MSG (@$AUTHOR)</li>"
             done < <(git log --format="%H" $PREV_TAG..HEAD)
+            COMMITS+="</ul>"
           fi
           
           COMMITS=$(echo "$COMMITS" | sed 's/[[:cntrl:]]//g')

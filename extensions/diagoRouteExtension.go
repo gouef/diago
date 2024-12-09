@@ -3,6 +3,7 @@ package extensions
 import (
 	_ "embed"
 	"github.com/gin-gonic/gin"
+	"github.com/gouef/diago"
 	"github.com/gouef/router"
 	"html/template"
 	"log"
@@ -77,7 +78,7 @@ func (e *DiagoRouteExtension) AfterNext(c *gin.Context) {
 }
 
 func (e *DiagoRouteExtension) generateDiagoPanelHTML(data DiagoRouteData) (string, error) {
-	tpl, err := template.New("diagoRoutePanel").ParseFiles("templates/route/diago_route_panel.gohtml")
+	tpl, err := template.New("diagoRoutePanel").Parse(diago.GetDiagoRoutePanelTemplate())
 	if err != nil {
 		return "", err
 	}
@@ -93,7 +94,7 @@ func (e *DiagoRouteExtension) generateDiagoPanelHTML(data DiagoRouteData) (strin
 }
 
 func (e *DiagoRouteExtension) generateDiagoPanelPopupHTML(data DiagoRouteData) (string, error) {
-	tpl, err := template.New("diagoRoutePanelPopup").ParseFiles("templates/route/diago_route_panel_popup.gohtml")
+	tpl, err := template.New("diagoRoutePanelPopup").Parse(diago.GetDiagoRoutePanelPopupTemplate())
 	if err != nil {
 		return "", err
 	}
@@ -109,7 +110,7 @@ func (e *DiagoRouteExtension) generateDiagoPanelPopupHTML(data DiagoRouteData) (
 }
 
 func (e *DiagoRouteExtension) generateDiagoPanelJSHTML() (string, error) {
-	tpl, err := template.New("diagoRoutePanelJS").ParseFiles("templates/route/diago_route_panel_js.gohtml")
+	tpl, err := template.New("diagoRoutePanelJS").Parse(diago.GetDiagoRoutePanelJSTemplate())
 	if err != nil {
 		return "", err
 	}

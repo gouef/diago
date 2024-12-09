@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gouef/diago"
 	"html/template"
 	"log"
 	"strings"
@@ -60,7 +61,7 @@ func (e *DiagoLatencyExtension) AfterNext(c *gin.Context) {
 func (e *DiagoLatencyExtension) generateDiagoPanelHTML(data struct {
 	Latency string
 }) (string, error) {
-	tpl, err := template.New("diagoLatencyPanel").ParseFiles("templates/latency/diago_latency_panel.gohtml")
+	tpl, err := template.New("diagoLatencyPanel").Parse(diago.GetDiagoLatencyPanelTemplate())
 	if err != nil {
 		return "", err
 	}

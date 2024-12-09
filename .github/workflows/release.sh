@@ -1,59 +1,4 @@
-name: Create Release
-
-on:
-  push:
-    tags:
-      - 'v*'
-  workflow_dispatch:
-    inputs:
-      tag_name:
-        description: 'Tag name for the release'
-        required: true
-        default: 'v1.0.0'
-      release_type:
-        description: 'Release type (stable, beta, rc)'
-        required: true
-        default: 'stable'
-
-jobs:
-  release:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Install GitHub CLI
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gh
-
-      - name: Authenticate GitHub CLI
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh auth setup-git
-
-      - name: Determine release type
-        id: release_type
-        run: |
-          TAG_NAME=${{ github.ref_name }}
-          if [[ "$TAG_NAME" == *beta* ]]; then
-            echo "release_type=Pre-release (Beta)" >> $GITHUB_ENV
-            echo "prerelease=true" >> $GITHUB_ENV
-          elif [[ "$TAG_NAME" == *rc* ]]; then
-            echo "release_type=Pre-release (Release Candidate)" >> $GITHUB_ENV
-            echo "prerelease=true" >> $GITHUB_ENV
-          else
-            echo "release_type=Stable" >> $GITHUB_ENV
-            echo "prerelease=false" >> $GITHUB_ENV
-          fi
-
-      - name: Get commits since last tag
-        id: commits
-        run: |
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
           if [ -z "$PREV_TAG" ]; then
             echo "No previous tag found, using initial commit."
             COMMITS=$(git log --format="- %s (@%an)" HEAD)
@@ -70,18 +15,11 @@ jobs:
               else
                 COMMITS+="$COMMIT_MSG (@$AUTHOR)"
               fi
-          
-              echo "Hledání commit_hash v Issues a PRs"
-              echo "Commit hash: $commit_hash"
-          
+
               # Prohledáme všechny komentáře v PR/Issue pro zmínky na commit
               COMMENT_LINKS=""
-              echo "$COMMENT_LINKS"
               # Hledání v issue
               ISSUE_COMMENTS=$(gh api "/repos/${{ github.repository }}/issues/comments?per_page=100" --jq "[.[] | select(.body | contains(\"$commit_hash\"))]")
-          
-              echo "ISSUE_COMMENTS"
-              echo "$ISSUE_COMMENTS"
               if [[ -n "$ISSUE_COMMENTS" ]]; then
                 # Pro každé nalezené komentáře přidáme odkaz na issue
                 ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=all" --jq "[.[] | select(.body | contains(\"$commit_hash\"))][].html_url")
@@ -93,9 +31,6 @@ jobs:
               PR_LINKS=""
               # Hledání v pull requestech
               PR_COMMENTS=$(gh api "/repos/${{ github.repository }}/pulls/comments?per_page=100" --jq "[.[] | select(.body | contains(\"$commit_hash\"))]")
-          
-              echo "PR_COMMENTS"
-              echo "$PR_COMMENTS"
               if [[ -n "$PR_COMMENTS" ]]; then
                 # Pro každé nalezené komentáře přidáme odkaz na PR
                 PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=all" --jq "[.[] | select(.body | contains(\"$commit_hash\"))][].html_url")
@@ -112,25 +47,10 @@ jobs:
                 COMMITS+=" (Referenced in Issues: $COMMENT_LINKS)"
               fi
               COMMITS+="</li>"
-              echo "commit=$COMMITS"
             done < <(git log --format="%H" $PREV_TAG..HEAD)
             COMMITS+="</ul>"
           fi
-          
-          COMMITS=$(echo "$COMMITS" | sed 's/[[:cntrl:]]//g')
-          
-          echo "commits=$COMMITS" >> $GITHUB_ENV
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create release
-        uses: ncipollo/release-action@v1
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag: ${{ github.ref_name }}
-          body: |
-            ${{ env.commits }}
-          draft: false
-          prerelease: ${{ env.prerelease }}
-          name: ${{ github.ref_name }} - ${{ env.release_type }}
+          COMMITS=$(echo "$COMMITS" | sed 's/[[:cntrl:]]//g')
+
+          echo "commits=$COMMITS" >> $GITHUB_ENV

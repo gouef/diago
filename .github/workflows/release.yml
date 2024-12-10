@@ -94,12 +94,25 @@ jobs:
               # Zpracování běžného commitu
               COMMITS+="<li>$COMMIT_MSG (@$AUTHOR)"
           
-              if [[ -n "$REFERENCES" ]]; then
-                COMMITS+=" (Referenced in: $REFERENCES)"
+              # Přidání všech odkazů na Issues
+              if [[ -n "$ISSUE_URLS" ]]; then
+                COMMITS+=" (Referenced in Issues: "
+                # Seznam odkazů oddělený mezerou
+                COMMITS+=$(echo "$ISSUE_URLS" | sed 's/ /, /g')
+                COMMITS+=")"
               fi
-          
+              
+              # Přidání všech odkazů na komentáře
+              if [[ -n "$ISSUE_COMMENT_URLS" ]]; then
+                COMMITS+=" (Referenced in Comments: "
+                # Seznam odkazů oddělený mezerou
+                COMMITS+=$(echo "$ISSUE_COMMENT_URLS" | sed 's/ /, /g')
+                COMMITS+=")"
+              fi
+              
+              # Přidání všech odkazů na PRs
               if [[ -n "$PR_URLS" ]]; then
-                COMMITS+=" (Referenced in PRs: $PR_URLS)"
+                COMMITS+=" (Referenced in PRs: <a href=\"$PR_URLS\" target=\"_blank\">$PR_URLS</a>)"
               fi
 
               COMMITS+="</li>"

@@ -99,7 +99,7 @@ jobs:
           
               # Přidání všech odkazů na Issues
               if [[ -n "$ISSUE_URLS" ]]; then
-                COMMITS+=" (Referenced in Issues: "
+                COMMITS+=", (Referenced in Issues: "
                 # Seznam odkazů oddělený mezerou
                 COMMITS+=$(echo "$ISSUE_URLS" | sed 's/ /, /g')
                 COMMITS+=")"
@@ -107,7 +107,7 @@ jobs:
               
               # Přidání všech odkazů na komentáře
               if [[ -n "$ISSUE_COMMENT_URLS" ]]; then
-                COMMITS+=" (Referenced in Comments: "
+                COMMITS+=", (Referenced in Comments: "
                 # Seznam odkazů oddělený mezerou
                 COMMITS+=$(echo "$ISSUE_COMMENT_URLS" | sed 's/ /, /g')
                 COMMITS+=")"
@@ -115,7 +115,7 @@ jobs:
               
               # Přidání všech odkazů na PRs
               if [[ -n "$PR_URLS" ]]; then
-                COMMITS+=" (Referenced in PRs: <a href=\"$PR_URLS\" target=\"_blank\">$PR_URLS</a>)"
+                COMMITS+=", (Referenced in PRs: $PR_URLS)"
               fi
 
               COMMITS+="</li>"

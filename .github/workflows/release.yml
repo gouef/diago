@@ -87,6 +87,9 @@ jobs:
               ISSUE_COMMENT_URLS=$(gh api "/repos/${{ github.repository }}/issues/comments" --jq "[.[] | select(.body != null and (.body | test(\"(Resolve|Close).*${commit_hash}\")))][].html_url" || echo "")
               PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=all" --jq "[.[] | select(.body != null and (.body | contains(\"${commit_hash}\")))][].html_url" || echo "")
               REFERENCES="$ISSUE_URLS $ISSUE_COMMENT_URLS"
+          
+              ISSUE_URLS=$(echo "$ISSUE_URLS" | sed 's/#issuecomment-[0-9]*//g')
+              ISSUE_COMMENT_URLS=$(echo "$ISSUE_COMMENT_URLS | sed 's/#issuecomment-[0-9]*//g')
 
               echo "$ISSUE_URLS"
               echo "$ISSUE_COMMENT_URLS"

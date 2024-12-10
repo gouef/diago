@@ -109,6 +109,7 @@ jobs:
                 COMMITS+=", (Referenced in Issues: "
                 # Seznam odkazů oddělený mezerou
                 COMMITS+=$(echo "$ISSUE_URLS" | tr '\n' ' ' | sed -E "s|https://github.com/${{ github.repository }}/issues/([0-9]+)|<a href=\"https://github.com/${{ github.repository }}/issues/\1\">#\1</a>|g" | sed 's/ / , /g')
+                COMMITS=$(echo "$COMMITS" | sed 's/, $//')
                 COMMITS+=" )"
               fi
               
@@ -117,13 +118,15 @@ jobs:
                 COMMITS+=", (Referenced in Comments: "
                 # Seznam odkazů oddělený mezerou
                 COMMITS+=$(echo "$ISSUE_COMMENT_URLS" | tr '\n' ' '| sed -E "s|https://github.com/${{ github.repository }}/issues/([0-9]+)|<a href=\"https://github.com/${{ github.repository }}/issues/\1\">#\1</a>|g" | sed 's/ / , /g')
+                COMMITS=$(echo "$COMMITS" | sed 's/, $//')
                 COMMITS+=" )"
               fi
               
               # Přidání všech odkazů na PRs
               if [[ -n "$PR_URLS" ]]; then
                 COMMITS+=", (Referenced in PRs: "
-                COMMITS+=$(echo "$PR_URLS" | tr '\n' ' '| sed -E "s|https://github.com/${{ github.repository }}/issues/([0-9]+)|<a href=\"https://github.com/${{ github.repository }}/issues/\1\">#\1</a>|g" | sed 's/ / , /g')
+                COMMITS+=$(echo "$PR_URLS" | tr '\n' ' '| sed -E "s|https://github.com/${{ github.repository }}/pulls/([0-9]+)|<a href=\"https://github.com/${{ github.repository }}/pulls/\1\">#\1</a>|g" | sed 's/ / , /g')
+                COMMITS=$(echo "$COMMITS" | sed 's/, $//')
                 COMMITS+=" )"
               fi
 

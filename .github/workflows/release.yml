@@ -89,7 +89,7 @@ jobs:
               REFERENCES="$ISSUE_URLS $ISSUE_COMMENT_URLS"
           
               ISSUE_URLS=$(echo "$ISSUE_URLS" | sed 's/#issuecomment-[0-9]*//g')
-              ISSUE_COMMENT_URLS=$(echo "$ISSUE_COMMENT_URLS | sed 's/#issuecomment-[0-9]*//g')
+              ISSUE_COMMENT_URLS=$(echo "$ISSUE_COMMENT_URLS" | sed 's/#issuecomment-[0-9]*//g')
 
               echo "$ISSUE_URLS"
               echo "$ISSUE_COMMENT_URLS"

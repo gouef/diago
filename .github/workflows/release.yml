@@ -88,9 +88,16 @@ jobs:
               PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=all" --jq "[.[] | select(.body != null and (.body | contains(\"${commit_hash}\")))][].html_url" || echo "")
               REFERENCES="$ISSUE_URLS $ISSUE_COMMENT_URLS"
           
+              echo "VANILA"
+          
+              echo "$ISSUE_URLS"
+              echo "$ISSUE_COMMENT_URLS"
+              echo "$PR_URLS"
+          
               ISSUE_URLS=$(echo "$ISSUE_URLS" | sed 's/#issuecomment-[0-9]*//g')
               ISSUE_COMMENT_URLS=$(echo "$ISSUE_COMMENT_URLS" | sed 's/#issuecomment-[0-9]*//g')
 
+              echo "CLEARED"
               echo "$ISSUE_URLS"
               echo "$ISSUE_COMMENT_URLS"
               echo "$PR_URLS"
@@ -101,7 +108,7 @@ jobs:
               if [[ -n "$ISSUE_URLS" ]]; then
                 COMMITS+=", (Referenced in Issues: "
                 # Seznam odkazů oddělený mezerou
-                COMMITS+=$(echo "$ISSUE_URLS" | sed 's/ / , /g')
+                COMMITS+=$(echo "$ISSUE_URLS" | tr '\n' ' ' | sed 's/ / , /g')
                 COMMITS+=" )"
               fi
               
@@ -109,14 +116,14 @@ jobs:
               if [[ -n "$ISSUE_COMMENT_URLS" ]]; then
                 COMMITS+=", (Referenced in Comments: "
                 # Seznam odkazů oddělený mezerou
-                COMMITS+=$(echo "$ISSUE_COMMENT_URLS" | sed 's/ / , /g')
+                COMMITS+=$(echo "$ISSUE_COMMENT_URLS" | tr '\n' ' ' | sed 's/ / , /g')
                 COMMITS+=" )"
               fi
               
               # Přidání všech odkazů na PRs
               if [[ -n "$PR_URLS" ]]; then
                 COMMITS+=", (Referenced in PRs: "
-                COMMITS+=$(echo "$PR_URLS" | sed 's/ / , /g')
+                COMMITS+=$(echo "$PR_URLS" | tr '\n' ' ' | sed 's/ / , /g')
                 COMMITS+=" )"
               fi
 

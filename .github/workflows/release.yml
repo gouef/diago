@@ -88,7 +88,7 @@ jobs:
               PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=all" --jq "[.[] | select(.body != null and (.body | contains(\"${commit_hash}\")))][].html_url" || echo "")
               REFERENCES="$ISSUE_URLS $ISSUE_COMMENT_URLS"
 
-  echo "$ISSUE_URLS"
+              echo "$ISSUE_URLS"
               echo "$ISSUE_COMMENT_URLS"
               echo "$PR_URLS"
               # Zpracování běžného commitu

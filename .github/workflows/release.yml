@@ -83,11 +83,14 @@ jobs:
               COMMIT_URL="https://github.com/${{ github.repository }}/commit/$commit_hash"
               echo "Checking commit: $COMMIT_URL"
           
-              ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=closed" --jq "[.[] | select(.body != null and .body | test(\".*(Resolve|Close).*http[s]?://.*\"))][].html_url" || echo "")
-              ISSUE_COMMENT_URLS=$(gh api "/repos/${{ github.repository }}/issues/comments" --jq "[.[] | select(.body != null and .body | test(\".*(Resolve|Close).*http[s]?://.*\"))][].html_url" || echo "")
-              PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=all" --jq "[.[] | select(.body != null and .body | contains(\"$COMMIT_URL\"))][].html_url" || echo "")
+              ISSUE_URLS=$(gh api "/repos/${{ github.repository }}/issues?state=closed" --jq "[.[] | select(.body != null and .body | test(\"(Resolve|Close).*$commit_hash.*\"))][].html_url" || echo "")
+              ISSUE_COMMENT_URLS=$(gh api "/repos/${{ github.repository }}/issues/comments" --jq "[.[] | select(.body != null and .body | test(\"(Resolve|Close).*$commit_hash.*\"))][].html_url" || echo "")
+              PR_URLS=$(gh api "/repos/${{ github.repository }}/pulls?state=all" --jq "[.[] | select(.body != null and .body | contains(\"$commit_hash\"))][].html_url" || echo "")
               REFERENCES="$ISSUE_URLS $ISSUE_COMMENT_URLS"
           
+              echo "$ISSUE_URLS"
+              echo "$ISSUE_COMMENT_URLS"
+              echo "$PR_URLS"
               # Zpracování běžného commitu
               COMMITS+="<li>$COMMIT_MSG (@$AUTHOR)"
           

@@ -7,6 +7,13 @@ Diago: the addictive tool. Friendly design, logging
 [![GitHub stars](https://img.shields.io/github/stars/gouef/diago?style=social)](https://github.com/gouef/diago/stargazers)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gouef/diago)](https://goreportcard.com/report/github.com/gouef/diago)
 
+
+## Vesions
+![Stable Version](https://img.shields.io/github/v/release/gouef/diago?label=Stable&labelColor=green)
+![GitHub Release](https://img.shields.io/github/v/release/gouef/diago?label=RC&include_prereleases&filter=*rc*&logoSize=diago)
+![GitHub Release](https://img.shields.io/github/v/release/gouef/diago?label=Beta&include_prereleases&filter=*beta*&logoSize=diago)
+
+
 ## How it looks ? 
 ![Diago](docs/diago.png)
 

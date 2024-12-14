@@ -1,16 +1,22 @@
-name: Reusable Commit Message Linter
+name: Commit Lint
 
 on:
+  workflow_call: # Trigger pro reusable workflow
+    inputs:
+      branch:
+        required: false
+        type: string
+        default: "main"
   pull_request:
     types: [opened, synchronize, edited]
   push:
     branches:
-      - main
       - master
+      - main
       - develop
       - feature/**
       - release/**
 
 jobs:
   lint-commits:
-    uses: gouef/github-lib-template/.github/workflows/commit-lint.yml@main
+    uses: gouef/github-lib-template/.github/workflows/shared_commit-lint.yml@main

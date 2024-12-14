@@ -13,4 +13,4 @@ on:
 
 jobs:
   lint-commits:
-    uses: gouef/github-lib-template/.github/workflows/lint-commits.yml@main
+    uses: gouef/github-lib-template/.github/workflows/commit-lint.yml@main

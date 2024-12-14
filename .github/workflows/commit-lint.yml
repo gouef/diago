@@ -1,39 +1,16 @@
-name: Commit Lint
+name: Reusable Commit Message Linter
 
 on:
   pull_request:
     types: [opened, synchronize, edited]
   push:
     branches:
-      - master
       - main
+      - master
       - develop
       - feature/**
       - release/**
 
 jobs:
   lint-commits:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Lint commit messages
-        run: |
-          COMMITS=$(git log --pretty=format:"%s" HEAD^..HEAD 2>/dev/null || git log --pretty=format:"%s" HEAD)
-
-          REGEX="^\[(Add|Fix|Update|Remove|Refactor|Docs|Test|Improve)\] .{10,}$"
-
-          echo "$COMMITS" | while read -r COMMIT; do
-            if [[ ! $COMMIT =~ $REGEX ]]; then
-              echo "Invalid commit message: $COMMIT"
-              echo "Commit messages must match: '[TYPE] Description' (e.g., '[Add] New feature')."
-              exit 1
-            fi
-          done
-
-      - name: Commit messages are valid
-        run: echo "All commit messages are valid!"
+    uses: gouef/github-lib-template/.github/workflows/lint-commits.yml@main

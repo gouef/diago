@@ -1,0 +1,37 @@
+name: Commit Lint
+
+on:
+  pull_request:
+    types: [opened, synchronize, edited]
+  push:
+    branches:
+      - master
+      - main
+      - develop
+      - feature/**
+      - release/**
+
+jobs:
+  lint-commits:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Lint commit messages
+        run: |
+          COMMITS=$(git log --pretty=format:"%s" HEAD^..HEAD)
+
+          REGEX="^\[(Add|Fix|Update|Remove|Refactor|Docs|Test|Improve)\] .{10,}$"
+
+          echo "$COMMITS" | while read -r COMMIT; do
+            if [[ ! $COMMIT =~ $REGEX ]]; then
+              echo "Invalid commit message: $COMMIT"
+              echo "Commit messages must match: '[TYPE] Description' (e.g., '[Add] New feature')."
+              exit 1
+            fi
+          done
+
+      - name: Commit messages are valid
+        run: echo "All commit messages are valid!"

@@ -18,10 +18,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Lint commit messages
         run: |
-          COMMITS=$(git log --pretty=format:"%s" HEAD^..HEAD)
+          COMMITS=$(git log --pretty=format:"%s" HEAD^..HEAD 2>/dev/null || git log --pretty=format:"%s" HEAD)
 
           REGEX="^\[(Add|Fix|Update|Remove|Refactor|Docs|Test|Improve)\] .{10,}$"
 

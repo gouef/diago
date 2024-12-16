@@ -6,6 +6,7 @@ Diago: the addictive tool. Friendly design, logging
 [![GoDoc](https://pkg.go.dev/badge/github.com/gouef/diago.svg)](https://pkg.go.dev/github.com/gouef/diago)
 [![GitHub stars](https://img.shields.io/github/stars/gouef/diago?style=social)](https://github.com/gouef/diago/stargazers)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gouef/diago)](https://goreportcard.com/report/github.com/gouef/diago)
+[![codecov](https://codecov.io/github/gouef/diago/branch/main/graph/badge.svg?token=YUG8EMH6Q8)](https://codecov.io/github/gouef/diago)
 
 
 ## Vesions

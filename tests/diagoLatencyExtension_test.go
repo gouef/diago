@@ -95,14 +95,15 @@ func TestDiagoLatencyExtension_GetPanelHtml_Nanoseconds(t *testing.T) {
 
 type mockDiagoPanelGeneratorWithError struct{}
 
-func (m *mockDiagoPanelGeneratorWithError) GenerateDiagoPanelHTML(data struct{ Latency string }) (string, error) {
-	return "", errors.New("mock error generating HTML") // Simulace chyby
+func (m *mockDiagoPanelGeneratorWithError) GenerateDiagoPanelHTML(data extensions.LatencyData) (string, error) {
+	return "", errors.New("mock error generating HTML")
 }
 
 func TestDiagoLatencyExtension_GetPanelHtml_ErrorHandling(t *testing.T) {
 	latencyExtension := extensions.NewDiagoLatencyExtension()
 
-	latencyExtension.PanelGenerator = &mockDiagoPanelGeneratorWithError{}
+	gen := &mockDiagoPanelGeneratorWithError{}
+	latencyExtension.PanelGenerator = gen
 
 	latencyExtension.SetLatency(500 * time.Millisecond)
 

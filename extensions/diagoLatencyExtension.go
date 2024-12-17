@@ -11,8 +11,11 @@ import (
 	"time"
 )
 
+type LatencyData struct {
+	Latency string
+}
 type DiagoPanelGenerator interface {
-	GenerateDiagoPanelHTML(data struct{ Latency string }) (string, error)
+	GenerateDiagoPanelHTML(data LatencyData) (string, error)
 }
 type DiagoLatencyExtension struct {
 	startTime      time.Time
@@ -21,8 +24,7 @@ type DiagoLatencyExtension struct {
 }
 type defaultDiagoPanelGenerator struct{}
 
-func (d *defaultDiagoPanelGenerator) GenerateDiagoPanelHTML(data struct{ Latency string }) (string, error) {
-	// Výchozí implementace generování HTML
+func (d *defaultDiagoPanelGenerator) GenerateDiagoPanelHTML(data LatencyData) (string, error) {
 	tpl, err := template.New("diagoLatencyPanel").Parse(diago.GetDiagoLatencyPanelTemplate())
 	if err != nil {
 		return "", err
@@ -38,9 +40,14 @@ func (d *defaultDiagoPanelGenerator) GenerateDiagoPanelHTML(data struct{ Latency
 	return builder.String(), nil
 }
 
+func newDefaultPanelGenerator() *defaultDiagoPanelGenerator {
+	return &defaultDiagoPanelGenerator{}
+}
+
 func NewDiagoLatencyExtension() *DiagoLatencyExtension {
+	generator := newDefaultPanelGenerator()
 	return &DiagoLatencyExtension{
-		PanelGenerator: &defaultDiagoPanelGenerator{},
+		PanelGenerator: generator,
 	}
 }
 
@@ -75,7 +82,7 @@ func (e *DiagoLatencyExtension) GetPanelHtml(c *gin.Context) string {
 
 	log.Printf("Time: %s", formattedLatency)
 
-	result, err := e.PanelGenerator.GenerateDiagoPanelHTML(struct{ Latency string }{Latency: formattedLatency})
+	result, err := e.PanelGenerator.GenerateDiagoPanelHTML(LatencyData{Latency: formattedLatency})
 
 	if err != nil {
 		log.Printf("Diago Lattency Extension: %s", err.Error())
@@ -90,20 +97,6 @@ func (e *DiagoLatencyExtension) AfterNext(c *gin.Context) {
 	e.latency = time.Since(e.startTime)
 }
 
-func (e *DiagoLatencyExtension) GenerateDiagoPanelHTML(data struct {
-	Latency string
-}) (string, error) {
-	tpl, err := template.New("diagoLatencyPanel").Parse(diago.GetDiagoLatencyPanelTemplate())
-	if err != nil {
-		return "", err
-	}
-
-	var builder strings.Builder
-
-	err = tpl.Execute(&builder, data)
-	if err != nil {
-		return "", err
-	}
-
-	return builder.String(), nil
+func (e *DiagoLatencyExtension) GenerateDiagoPanelHTML(data LatencyData) (string, error) {
+	return e.PanelGenerator.GenerateDiagoPanelHTML(data)
 }

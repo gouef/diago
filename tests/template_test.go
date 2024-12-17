@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"html/template"
-	"log"
 	_ "log"
 	"net/http"
 	"net/http/httptest"
@@ -66,10 +65,6 @@ func TestGenerateHTML_ParseError(t *testing.T) {
 
 	result, err := d.GenerateHTML("diagoPanel", mockTemplateProvider, nil)
 
-	log.Printf("Result: %s", result)
-
-	log.Printf("Err: %t", err != nil)
-	log.Printf("Err: %v", err)
 	assert.Empty(t, result)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "unclosed action")

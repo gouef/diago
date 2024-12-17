@@ -3,7 +3,6 @@ package diago
 import (
 	"bytes"
 	_ "embed"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gouef/router"
 	"html/template"
@@ -94,10 +93,6 @@ func (w *responseWriter) Write(data []byte) (int, error) {
 }
 
 func (w *responseWriter) WriteHeader(statusCode int) {
-	if w.Written() {
-		fmt.Sprintf("[WARNING] Headers were already written. Is: %d, try: %d", w.Status(), statusCode)
-		return
-	}
 	w.statusCode = statusCode
 	w.ResponseWriter.WriteHeader(statusCode)
 }

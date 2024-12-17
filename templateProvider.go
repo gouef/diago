@@ -1,7 +1,6 @@
 package diago
 
 import (
-	"errors"
 	"html/template"
 	"strings"
 )
@@ -25,9 +24,6 @@ func (p DefaultTemplateProvider) GetTemplate() string {
 func (d *DefaultPanelGenerator) GenerateHTML(name string, templateProvider TemplateProvider, data interface{}) (string, error) {
 	templateContent := templateProvider.GetTemplate()
 	tp := template.New(name)
-	if tp == nil {
-		return "", errors.New("Bad template name")
-	}
 	tpl, err := tp.Parse(templateContent)
 	if err != nil {
 		return "", err

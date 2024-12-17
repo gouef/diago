@@ -158,6 +158,16 @@ func TestGenerateDiagoPanelHTML_TemplateExecuteError(t *testing.T) {
 	assert.Empty(t, result, "Expected empty result when execution fails")
 }
 
+func TestDiagoLatencyExtension_SetTemplateProvider(t *testing.T) {
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+
+	mockProvider := &mockTemplateProviderWithParseError{}
+
+	latencyExtension.SetTemplateProvider(mockProvider)
+
+	assert.Equal(t, mockProvider, latencyExtension.TemplateProvider, "TemplateProvider should be set correctly")
+}
+
 type logWriter struct {
 	output *string
 }

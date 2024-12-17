@@ -103,7 +103,7 @@ func TestDiagoLatencyExtension_GetPanelHtml_Nanoseconds(t *testing.T) {
 
 type mockDiagoPanelGeneratorWithError struct{}
 
-func (m *mockDiagoPanelGeneratorWithError) GenerateDiagoPanelHTML(data extensions.LatencyData) (string, error) {
+func (m *mockDiagoPanelGeneratorWithError) GenerateDiagoPanelHTML(templateProvider extensions.TemplateProvider, data extensions.LatencyData) (string, error) {
 	return "", errors.New("mock error generating HTML")
 }
 
@@ -122,6 +122,40 @@ func TestDiagoLatencyExtension_GetPanelHtml_ErrorHandling(t *testing.T) {
 	assert.Empty(t, panelHtml, "Panel HTML should be empty when there's an error")
 
 	assert.Contains(t, logOutput, "Diago Lattency Extension: mock error generating HTML", "Error message should be logged")
+}
+
+type mockTemplateProviderWithParseError struct{}
+
+func (m *mockTemplateProviderWithParseError) GetDiagoLatencyPanelTemplate() string {
+	return "{{ .Latencys }}"
+}
+
+type mockTemplateProviderWithExecuteError struct{}
+
+func (m *mockTemplateProviderWithExecuteError) GetDiagoLatencyPanelTemplate() string {
+	return `{{ .NonExistentField }}`
+}
+
+func TestGenerateDiagoPanelHTML_TemplateParseError(t *testing.T) {
+	mockProvider := &mockTemplateProviderWithParseError{}
+
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+
+	result, err := latencyExtension.PanelGenerator.GenerateDiagoPanelHTML(mockProvider, extensions.LatencyData{Latency: "500 ms"})
+
+	assert.Error(t, err, "Expected error while parsing template")
+	assert.Empty(t, result, "Expected empty result when parsing fails")
+}
+
+func TestGenerateDiagoPanelHTML_TemplateExecuteError(t *testing.T) {
+	mockProvider := &mockTemplateProviderWithExecuteError{}
+
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+
+	result, err := latencyExtension.PanelGenerator.GenerateDiagoPanelHTML(mockProvider, extensions.LatencyData{Latency: "500 ms"})
+
+	assert.Error(t, err, "Expected error while executing template")
+	assert.Empty(t, result, "Expected empty result when execution fails")
 }
 
 type logWriter struct {

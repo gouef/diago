@@ -11,13 +11,45 @@ import (
 	"time"
 )
 
+type DiagoPanelGenerator interface {
+	GenerateDiagoPanelHTML(data struct{ Latency string }) (string, error)
+}
 type DiagoLatencyExtension struct {
-	startTime time.Time
-	latency   time.Duration
+	startTime      time.Time
+	latency        time.Duration
+	PanelGenerator DiagoPanelGenerator
+}
+type defaultDiagoPanelGenerator struct{}
+
+func (d *defaultDiagoPanelGenerator) GenerateDiagoPanelHTML(data struct{ Latency string }) (string, error) {
+	// Výchozí implementace generování HTML
+	tpl, err := template.New("diagoLatencyPanel").Parse(diago.GetDiagoLatencyPanelTemplate())
+	if err != nil {
+		return "", err
+	}
+
+	var builder strings.Builder
+
+	err = tpl.Execute(&builder, data)
+	if err != nil {
+		return "", err
+	}
+
+	return builder.String(), nil
 }
 
 func NewDiagoLatencyExtension() *DiagoLatencyExtension {
-	return &DiagoLatencyExtension{}
+	return &DiagoLatencyExtension{
+		PanelGenerator: &defaultDiagoPanelGenerator{},
+	}
+}
+
+func (e *DiagoLatencyExtension) GetLatency() time.Duration {
+	return e.latency
+}
+
+func (e *DiagoLatencyExtension) SetLatency(latency time.Duration) {
+	e.latency = latency
 }
 
 func (e *DiagoLatencyExtension) GetHtml(c *gin.Context) string {
@@ -43,7 +75,7 @@ func (e *DiagoLatencyExtension) GetPanelHtml(c *gin.Context) string {
 
 	log.Printf("Time: %s", formattedLatency)
 
-	result, err := e.generateDiagoPanelHTML(struct{ Latency string }{Latency: formattedLatency})
+	result, err := e.PanelGenerator.GenerateDiagoPanelHTML(struct{ Latency string }{Latency: formattedLatency})
 
 	if err != nil {
 		log.Printf("Diago Lattency Extension: %s", err.Error())
@@ -58,7 +90,7 @@ func (e *DiagoLatencyExtension) AfterNext(c *gin.Context) {
 	e.latency = time.Since(e.startTime)
 }
 
-func (e *DiagoLatencyExtension) generateDiagoPanelHTML(data struct {
+func (e *DiagoLatencyExtension) GenerateDiagoPanelHTML(data struct {
 	Latency string
 }) (string, error) {
 	tpl, err := template.New("diagoLatencyPanel").Parse(diago.GetDiagoLatencyPanelTemplate())

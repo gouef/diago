@@ -1,14 +1,23 @@
 package tests
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/gouef/diago"
 	"github.com/gouef/diago/extensions"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
 )
+
+type mockDiagoPanelGenerator struct{}
+
+func (m *mockDiagoPanelGenerator) GenerateDiagoPanelHTML(data struct{ Latency string }) (string, error) {
+	return "<div>Mocked HTML: " + data.Latency + "</div>", nil
+}
 
 func TestDiagoLatencyExtension(t *testing.T) {
 	latencyExtension := extensions.NewDiagoLatencyExtension()
@@ -37,4 +46,154 @@ func TestDiagoLatencyExtension(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Contains(t, w.Body.String(), "ms")
+}
+
+func TestDiagoLatencyExtension_GetLatency(t *testing.T) {
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension.SetLatency(2 * time.Second)
+
+	latency := latencyExtension.GetLatency()
+	assert.Equal(t, latency, 2*time.Second, "Latency should be equal")
+}
+
+func TestDiagoLatencyExtension_GetHtml(t *testing.T) {
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+
+	html := latencyExtension.GetHtml(nil)
+	assert.Empty(t, html, "GetHtml should return an empty string")
+}
+
+func TestDiagoLatencyExtension_GetJSHtml(t *testing.T) {
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+
+	jsHtml := latencyExtension.GetJSHtml(nil)
+	assert.Empty(t, jsHtml, "GetJSHtml should return an empty string")
+}
+
+func TestDiagoLatencyExtension_GetPanelHtml_Seconds(t *testing.T) {
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension.SetLatency(2 * time.Second)
+
+	panelHtml := latencyExtension.GetPanelHtml(nil)
+	assert.Contains(t, panelHtml, "2.00 s", "Panel HTML should contain latency in seconds")
+}
+
+func TestDiagoLatencyExtension_GetPanelHtml_Milliseconds(t *testing.T) {
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension.SetLatency(150 * time.Millisecond)
+
+	panelHtml := latencyExtension.GetPanelHtml(nil)
+	assert.Contains(t, panelHtml, "150.00 ms", "Panel HTML should contain latency in milliseconds")
+}
+
+func TestDiagoLatencyExtension_GetPanelHtml_Microseconds(t *testing.T) {
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension.SetLatency(500 * time.Microsecond)
+
+	panelHtml := latencyExtension.GetPanelHtml(nil)
+	assert.Contains(t, panelHtml, "500.00 µs", "Panel HTML should contain latency in microseconds")
+}
+
+func TestDiagoLatencyExtension_GetPanelHtml_Nanoseconds(t *testing.T) {
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension.SetLatency(500 * time.Nanosecond)
+
+	panelHtml := latencyExtension.GetPanelHtml(nil)
+	assert.Contains(t, panelHtml, "500.00 ns", "Panel HTML should contain latency in nanoseconds")
+}
+
+type mockDiagoPanelGeneratorWithError struct{}
+
+func (m *mockDiagoPanelGeneratorWithError) GenerateHTML(name string, templateProvider diago.TemplateProvider, data interface{}) (string, error) {
+	return "", errors.New("mock error generating HTML")
+}
+
+func TestDiagoLatencyExtension_GetPanelHtml_ErrorHandling(t *testing.T) {
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+
+	gen := &mockDiagoPanelGeneratorWithError{}
+	latencyExtension.PanelGenerator = gen
+
+	latencyExtension.SetLatency(500 * time.Millisecond)
+
+	var logOutput string
+	log.SetOutput(&logWriter{&logOutput})
+
+	panelHtml := latencyExtension.GetPanelHtml(nil)
+	assert.Empty(t, panelHtml, "Panel HTML should be empty when there's an error")
+
+	assert.Contains(t, logOutput, "Diago Lattency Extension: mock error generating HTML", "Error message should be logged")
+}
+
+type mockTemplateProviderWithParseError struct{}
+
+func (m *mockTemplateProviderWithParseError) GetTemplate() string {
+	return "{{ .Latencys }}"
+}
+
+type mockTemplateProviderWithExecuteError struct{}
+
+func (m *mockTemplateProviderWithExecuteError) GetTemplate() string {
+	return `{{ .NonExistentField }}`
+}
+
+func TestGenerateDiagoPanelHTML_TemplateParseError(t *testing.T) {
+	mockProvider := &mockTemplateProviderWithParseError{}
+
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+
+	result, err := latencyExtension.PanelGenerator.GenerateHTML("error", mockProvider, extensions.LatencyData{Latency: "500 ms"})
+
+	assert.Error(t, err, "Expected error while parsing template")
+	assert.Empty(t, result, "Expected empty result when parsing fails")
+}
+
+type mockInvalidTemplateProvider struct{}
+
+func (m *mockInvalidTemplateProvider) GetDiagoLatencyPanelTemplate() string {
+	return "{{ .InvalidField"
+}
+
+/*
+	func TestGenerateDiagoPanelHTML_TemplateParseError2(t *testing.T) {
+		generator := extensions.NewDefaultPanelGenerator()
+
+		invalidTemplateProvider := &mockInvalidTemplateProvider{}
+
+		latencyData := extensions.LatencyData{Latency: "500 ms"}
+
+		result, err := generator.GenerateDiagoPanelHTML(invalidTemplateProvider, latencyData)
+
+		assert.Error(t, err, "Expected error while parsing template")
+		assert.Empty(t, result, "Expected empty result when parsing fails")
+	}
+*/
+func TestGenerateDiagoPanelHTML_TemplateExecuteError(t *testing.T) {
+	mockProvider := &mockTemplateProviderWithExecuteError{}
+
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+
+	result, err := latencyExtension.PanelGenerator.GenerateHTML("test", mockProvider, extensions.LatencyData{Latency: "500 ms"})
+
+	assert.Error(t, err, "Expected error while executing template")
+	assert.Empty(t, result, "Expected empty result when execution fails")
+}
+
+func TestDiagoLatencyExtension_SetTemplateProvider(t *testing.T) {
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+
+	mockProvider := &mockTemplateProviderWithParseError{}
+
+	latencyExtension.SetTemplateProvider(mockProvider)
+
+	assert.Equal(t, mockProvider, latencyExtension.TemplateProvider, "TemplateProvider should be set correctly")
+}
+
+type logWriter struct {
+	output *string
+}
+
+func (lw *logWriter) Write(p []byte) (n int, err error) {
+	*lw.output = string(p)
+	return len(p), nil
 }

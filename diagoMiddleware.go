@@ -3,11 +3,12 @@ package diago
 import (
 	"bytes"
 	_ "embed"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gouef/router"
 	"html/template"
 	"log"
-	"strings"
+	"net/http"
 )
 
 type DiagoData struct {
@@ -18,7 +19,7 @@ type DiagoData struct {
 
 func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
+		originalWriter := c.Writer
 		for _, e := range d.GetExtensions() {
 			e.BeforeNext(c)
 		}
@@ -27,10 +28,13 @@ func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 		writer := &responseWriter{
 			ResponseWriter: c.Writer,
 			buffer:         responseBuffer,
+			statusCode:     http.StatusOK,
 		}
 
-		c.Next()
+		c.Writer = writer
 
+		c.Next()
+		c.Copy()
 		for _, e := range d.GetExtensions() {
 			e.AfterNext(c)
 		}
@@ -54,59 +58,46 @@ func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 				ExtensionsJSHtml:    extensionsJSHtml,
 			}
 
-			diagoPanelHTML, err := GenerateDiagoPanelHTML(diagoData)
+			diagoPanelHTML, err := d.PanelGenerator.GenerateHTML("diagoPanel", d.TemplateProvider, diagoData)
 
 			if err != nil {
-				log.Println("Error generating Diago panel HTML:", err)
-				return
+				err = c.Error(err)
+				c.Status(500)
+				c.Writer.WriteHeaderNow()
+				diagoPanelHTML = "Error generating Diago panel HTML"
 			}
 
 			writer.buffer.WriteString(diagoPanelHTML)
 		}
 
+		c.Writer = originalWriter
 		_, err := c.Writer.Write(responseBuffer.Bytes())
 		if err != nil {
-			log.Println("Error writing response:", err)
+			err = c.Error(err)
+			c.Status(500)
+			writer.buffer.WriteString("Error generating Diago panel HTML")
 		}
 
-		// Logování status kódu
 		status := c.Writer.Status()
 		log.Printf("Status: %d", status)
 	}
 }
 
-func GenerateDiagoPanelHTML(data DiagoData) (string, error) {
-
-	tpl, err := template.New("diagoPanel").Parse(GetDiagoPanelTemplate())
-	if err != nil {
-		return "", err
-	}
-
-	var builder strings.Builder
-
-	err = tpl.Execute(&builder, data)
-	if err != nil {
-		return "", err
-	}
-
-	return builder.String(), nil
-}
-
 type responseWriter struct {
 	gin.ResponseWriter
-	buffer *bytes.Buffer
+	buffer     *bytes.Buffer
+	statusCode int
 }
 
 func (w *responseWriter) Write(data []byte) (int, error) {
 	return w.buffer.Write(data)
 }
 
-func (w *responseWriter) WriteHeaderNow() {
-	if !w.Written() {
-		w.ResponseWriter.WriteHeaderNow()
-	}
-}
-
 func (w *responseWriter) WriteHeader(statusCode int) {
+	if w.Written() {
+		fmt.Sprintf("[WARNING] Headers were already written. Is: %d, try: %d", w.Status(), statusCode)
+		return
+	}
+	w.statusCode = statusCode
 	w.ResponseWriter.WriteHeader(statusCode)
 }

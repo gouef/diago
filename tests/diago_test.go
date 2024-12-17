@@ -62,7 +62,7 @@ func TestDiago(t *testing.T) {
 		assert.Equal(t, "<div>Panel2</div>", newDiago.GetExtensions()[1].GetPanelHtml(nil))
 	})
 
-	t.Run("Test BeforeNext on DiagoExtension", func(t *testing.T) {
+	t.Run("Test BeforeNext on Extension", func(t *testing.T) {
 		newDiago := diago.NewDiago()
 
 		mockExtension := &MockDiagoExtension{}
@@ -74,7 +74,7 @@ func TestDiago(t *testing.T) {
 		assert.True(t, mockExtension.BeforeCalled)
 	})
 
-	t.Run("Test AfterNext on DiagoExtension", func(t *testing.T) {
+	t.Run("Test AfterNext on Extension", func(t *testing.T) {
 		newDiago := diago.NewDiago()
 
 		mockExtension := &MockDiagoExtension{}
@@ -86,7 +86,7 @@ func TestDiago(t *testing.T) {
 		assert.True(t, mockExtension.AfterCalled)
 	})
 
-	t.Run("Test GetPanelHtml from DiagoExtension", func(t *testing.T) {
+	t.Run("Test GetPanelHtml from Extension", func(t *testing.T) {
 		newDiago := diago.NewDiago()
 
 		mockExtension := &MockDiagoExtension{PanelHtml: "<div>Panel</div>"}
@@ -96,7 +96,7 @@ func TestDiago(t *testing.T) {
 		assert.Equal(t, "<div>Panel</div>", newDiago.GetExtensions()[0].GetPanelHtml(nil))
 	})
 
-	t.Run("Test GetHtml from DiagoExtension", func(t *testing.T) {
+	t.Run("Test GetHtml from Extension", func(t *testing.T) {
 		newDiago := diago.NewDiago()
 
 		mockExtension := &MockDiagoExtension{Html: "<div>Content</div>"}
@@ -106,7 +106,7 @@ func TestDiago(t *testing.T) {
 		assert.Equal(t, "<div>Content</div>", newDiago.GetExtensions()[0].GetHtml(nil))
 	})
 
-	t.Run("Test GetJSHtml from DiagoExtension", func(t *testing.T) {
+	t.Run("Test GetJSHtml from Extension", func(t *testing.T) {
 		newDiago := diago.NewDiago()
 
 		mockExtension := &MockDiagoExtension{JSHtml: "<script>console.log('test');</script>"}

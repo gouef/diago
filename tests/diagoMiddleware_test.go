@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gouef/diago"
 	"github.com/stretchr/testify/assert"
-	"html/template"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -24,11 +23,9 @@ func (e *MyExtension) GetJSHtml(c *gin.Context) string {
 	return "<script>console.log('JS');</script>"
 }
 
-func (e *MyExtension) BeforeNext(c *gin.Context) {
-}
+func (e *MyExtension) BeforeNext(c *gin.Context) {}
 
-func (e *MyExtension) AfterNext(c *gin.Context) {
-}
+func (e *MyExtension) AfterNext(c *gin.Context) {}
 
 func TestDiagoMiddleware(t *testing.T) {
 	r := gin.Default()
@@ -41,13 +38,11 @@ func TestDiagoMiddleware(t *testing.T) {
 		c.Header("Content-Type", "text/html; charset=utf-8")
 		c.String(200, "Hello, world!")
 	})
-
+	w := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/test", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	w := httptest.NewRecorder()
 
 	r.ServeHTTP(w, req)
 
@@ -56,20 +51,4 @@ func TestDiagoMiddleware(t *testing.T) {
 	assert.Contains(t, w.Body.String(), "<div>Panel</div>")
 	assert.Contains(t, w.Body.String(), "<div>Content</div>")
 	assert.Contains(t, w.Body.String(), "<script>console.log('JS');</script>")
-}
-
-func TestGenerateDiagoPanelHTML(t *testing.T) {
-	diagoData := diago.DiagoData{
-		ExtensionsHtml:      []template.HTML{"<div>Extension HTML</div>"},
-		ExtensionsPanelHtml: []template.HTML{"<div>Panel HTML</div>"},
-		ExtensionsJSHtml:    []template.HTML{"<script>JS</script>"},
-	}
-
-	diagoPanelHTML, err := diago.GenerateDiagoPanelHTML(diagoData)
-
-	assert.NoError(t, err)
-
-	assert.Contains(t, diagoPanelHTML, "<div>Extension HTML</div>")
-	assert.Contains(t, diagoPanelHTML, "<div>Panel HTML</div>")
-	assert.Contains(t, diagoPanelHTML, "<script>JS</script>")
 }

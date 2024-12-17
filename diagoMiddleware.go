@@ -54,7 +54,7 @@ func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 				ExtensionsJSHtml:    extensionsJSHtml,
 			}
 
-			diagoPanelHTML, err := generateDiagoPanelHTML(diagoData)
+			diagoPanelHTML, err := GenerateDiagoPanelHTML(diagoData)
 
 			if err != nil {
 				log.Println("Error generating Diago panel HTML:", err)
@@ -75,7 +75,7 @@ func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 	}
 }
 
-func generateDiagoPanelHTML(data DiagoData) (string, error) {
+func GenerateDiagoPanelHTML(data DiagoData) (string, error) {
 
 	tpl, err := template.New("diagoPanel").Parse(GetDiagoPanelTemplate())
 	if err != nil {

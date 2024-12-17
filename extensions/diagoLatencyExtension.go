@@ -61,16 +61,7 @@ func (e *DiagoLatencyExtension) GetJSHtml(c *gin.Context) string {
 func (e *DiagoLatencyExtension) GetPanelHtml(c *gin.Context) string {
 
 	var formattedLatency string
-	switch {
-	case e.latency > time.Second:
-		formattedLatency = fmt.Sprintf("%.2f s", float64(e.latency)/float64(time.Second))
-	case e.latency > time.Millisecond:
-		formattedLatency = fmt.Sprintf("%.2f ms", float64(e.latency)/float64(time.Millisecond))
-	case e.latency > time.Microsecond:
-		formattedLatency = fmt.Sprintf("%.2f µs", float64(e.latency)/float64(time.Microsecond))
-	default:
-		formattedLatency = fmt.Sprintf("%.2f ns", float64(e.latency)/float64(time.Nanosecond))
-	}
+	formattedLatency = formatLatency(e.latency)
 
 	log.Printf("Time: %s", formattedLatency)
 
@@ -87,4 +78,17 @@ func (e *DiagoLatencyExtension) BeforeNext(c *gin.Context) {
 }
 func (e *DiagoLatencyExtension) AfterNext(c *gin.Context) {
 	e.latency = time.Since(e.startTime)
+}
+
+func formatLatency(latency time.Duration) string {
+	switch {
+	case latency > time.Second:
+		return fmt.Sprintf("%.2f s", float64(latency)/float64(time.Second))
+	case latency > time.Millisecond:
+		return fmt.Sprintf("%.2f ms", float64(latency)/float64(time.Millisecond))
+	case latency > time.Microsecond:
+		return fmt.Sprintf("%.2f µs", float64(latency)/float64(time.Microsecond))
+	default:
+		return fmt.Sprintf("%.2f ns", float64(latency)/float64(time.Nanosecond))
+	}
 }

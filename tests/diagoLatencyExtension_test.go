@@ -147,6 +147,25 @@ func TestGenerateDiagoPanelHTML_TemplateParseError(t *testing.T) {
 	assert.Empty(t, result, "Expected empty result when parsing fails")
 }
 
+type mockInvalidTemplateProvider struct{}
+
+func (m *mockInvalidTemplateProvider) GetDiagoLatencyPanelTemplate() string {
+	return "{{ .InvalidField"
+}
+
+func TestGenerateDiagoPanelHTML_TemplateParseError2(t *testing.T) {
+	generator := extensions.NewDefaultPanelGenerator()
+
+	invalidTemplateProvider := &mockInvalidTemplateProvider{}
+
+	latencyData := extensions.LatencyData{Latency: "500 ms"}
+
+	result, err := generator.GenerateDiagoPanelHTML(invalidTemplateProvider, latencyData)
+
+	assert.Error(t, err, "Expected error while parsing template")
+	assert.Empty(t, result, "Expected empty result when parsing fails")
+}
+
 func TestGenerateDiagoPanelHTML_TemplateExecuteError(t *testing.T) {
 	mockProvider := &mockTemplateProviderWithExecuteError{}
 

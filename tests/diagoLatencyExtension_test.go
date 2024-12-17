@@ -47,6 +47,14 @@ func TestDiagoLatencyExtension(t *testing.T) {
 	assert.Contains(t, w.Body.String(), "ms")
 }
 
+func TestDiagoLatencyExtension_GetLatency(t *testing.T) {
+	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension.SetLatency(2 * time.Second)
+
+	latency := latencyExtension.GetLatency()
+	assert.Equal(t, latency, 2*time.Second, "Latency should be equal")
+}
+
 func TestDiagoLatencyExtension_GetHtml(t *testing.T) {
 	latencyExtension := extensions.NewDiagoLatencyExtension()
 

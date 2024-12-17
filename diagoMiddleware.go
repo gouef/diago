@@ -7,7 +7,6 @@ import (
 	"github.com/gouef/router"
 	"html/template"
 	"log"
-	"strings"
 )
 
 type DiagoData struct {
@@ -54,7 +53,7 @@ func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 				ExtensionsJSHtml:    extensionsJSHtml,
 			}
 
-			diagoPanelHTML, err := GenerateDiagoPanelHTML(diagoData)
+			diagoPanelHTML, err := d.PanelGenerator.GenerateHTML("diagoPanel", d.TemplateProvider, diagoData)
 
 			if err != nil {
 				log.Println("Error generating Diago panel HTML:", err)
@@ -73,23 +72,6 @@ func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 		status := c.Writer.Status()
 		log.Printf("Status: %d", status)
 	}
-}
-
-func GenerateDiagoPanelHTML(data DiagoData) (string, error) {
-
-	tpl, err := template.New("diagoPanel").Parse(GetDiagoPanelTemplate())
-	if err != nil {
-		return "", err
-	}
-
-	var builder strings.Builder
-
-	err = tpl.Execute(&builder, data)
-	if err != nil {
-		return "", err
-	}
-
-	return builder.String(), nil
 }
 
 type responseWriter struct {

@@ -5,63 +5,33 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gouef/diago"
-	"html/template"
 	"log"
-	"strings"
 	"time"
 )
 
 type LatencyData struct {
 	Latency string
 }
-type DiagoPanelGenerator interface {
-	GenerateDiagoPanelHTML(templateProvider TemplateProvider, data LatencyData) (string, error)
-}
-
-type TemplateProvider interface {
-	GetDiagoLatencyPanelTemplate() string
-}
 
 type DiagoLatencyExtension struct {
 	startTime        time.Time
 	latency          time.Duration
-	PanelGenerator   DiagoPanelGenerator
-	TemplateProvider TemplateProvider
+	PanelGenerator   diago.PanelGenerator
+	TemplateProvider diago.TemplateProvider
 }
-type DefaultDiagoLatencyPanelGenerator struct{}
-type DefaultDiagoLatencyTemplateProvider struct{}
 
-func (p DefaultDiagoLatencyTemplateProvider) GetDiagoLatencyPanelTemplate() string {
+type DefaultLatencyTemplateProvider struct{}
+
+func (p DefaultLatencyTemplateProvider) GetTemplate() string {
 	return diago.GetDiagoLatencyPanelTemplate()
 }
 
-func (d *DefaultDiagoLatencyPanelGenerator) GenerateDiagoPanelHTML(templateProvider TemplateProvider, data LatencyData) (string, error) {
-	templateContent := templateProvider.GetDiagoLatencyPanelTemplate()
-	tpl, err := template.New("diagoLatencyPanel").Parse(templateContent)
-	if err != nil {
-		return "", err
-	}
-
-	var builder strings.Builder
-
-	err = tpl.Execute(&builder, data)
-	if err != nil {
-		return "", err
-	}
-
-	return builder.String(), nil
-}
-
-func NewDefaultPanelGenerator() *DefaultDiagoLatencyPanelGenerator {
-	return &DefaultDiagoLatencyPanelGenerator{}
-}
-
-func NewDefaultTemplateProvider() *DefaultDiagoLatencyTemplateProvider {
-	return &DefaultDiagoLatencyTemplateProvider{}
+func NewDefaultTemplateProvider() *DefaultLatencyTemplateProvider {
+	return &DefaultLatencyTemplateProvider{}
 }
 
 func NewDiagoLatencyExtension() *DiagoLatencyExtension {
-	generator := NewDefaultPanelGenerator()
+	generator := diago.NewDefaultPanelGenerator()
 	tmpProvider := NewDefaultTemplateProvider()
 	return &DiagoLatencyExtension{
 		PanelGenerator:   generator,
@@ -69,7 +39,7 @@ func NewDiagoLatencyExtension() *DiagoLatencyExtension {
 	}
 }
 
-func (e *DiagoLatencyExtension) SetTemplateProvider(provider TemplateProvider) {
+func (e *DiagoLatencyExtension) SetTemplateProvider(provider diago.TemplateProvider) {
 	e.TemplateProvider = provider
 }
 
@@ -104,7 +74,7 @@ func (e *DiagoLatencyExtension) GetPanelHtml(c *gin.Context) string {
 
 	log.Printf("Time: %s", formattedLatency)
 
-	result, err := e.PanelGenerator.GenerateDiagoPanelHTML(e.TemplateProvider, LatencyData{Latency: formattedLatency})
+	result, err := e.PanelGenerator.GenerateHTML("diagoLatencyPanel", e.TemplateProvider, LatencyData{Latency: formattedLatency})
 
 	if err != nil {
 		log.Printf("Diago Lattency Extension: %s", err.Error())

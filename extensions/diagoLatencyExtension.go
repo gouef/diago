@@ -96,7 +96,3 @@ func (e *DiagoLatencyExtension) BeforeNext(c *gin.Context) {
 func (e *DiagoLatencyExtension) AfterNext(c *gin.Context) {
 	e.latency = time.Since(e.startTime)
 }
-
-func (e *DiagoLatencyExtension) GenerateDiagoPanelHTML(data LatencyData) (string, error) {
-	return e.PanelGenerator.GenerateDiagoPanelHTML(data)
-}

@@ -76,12 +76,7 @@ func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 		}
 
 		c.Writer = originalWriter
-		_, err := c.Writer.Write(responseBuffer.Bytes())
-		if err != nil {
-			err = c.Error(err)
-			c.Status(500)
-			writer.buffer.WriteString("Error generating Diago panel HTML")
-		}
+		c.Writer.Write(responseBuffer.Bytes())
 
 		status := c.Writer.Status()
 		log.Printf("Status: %d", status)

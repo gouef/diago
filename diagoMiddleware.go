@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gouef/router"
 	"html/template"
-	"log"
 	"net/http"
 )
 
@@ -77,9 +76,6 @@ func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 
 		c.Writer = originalWriter
 		c.Writer.Write(responseBuffer.Bytes())
-
-		status := c.Writer.Status()
-		log.Printf("Status: %d", status)
 	}
 }
 

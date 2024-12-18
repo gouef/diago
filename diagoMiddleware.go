@@ -18,6 +18,12 @@ type DiagoData struct {
 
 func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 	return func(c *gin.Context) {
+
+		if r != nil && r.IsRelease() {
+			c.Next()
+			return
+		}
+
 		originalWriter := c.Writer
 		for _, e := range d.GetExtensions() {
 			e.BeforeNext(c)

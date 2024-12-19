@@ -9,7 +9,7 @@ Diago: the addictive tool. Friendly design, logging
 [![codecov](https://codecov.io/github/gouef/diago/branch/main/graph/badge.svg?token=YUG8EMH6Q8)](https://codecov.io/github/gouef/diago)
 
 
-## Vesions
+## Versions
 ![Stable Version](https://img.shields.io/github/v/release/gouef/diago?label=Stable&labelColor=green)
 ![GitHub Release](https://img.shields.io/github/v/release/gouef/diago?label=RC&include_prereleases&filter=*rc*&logoSize=diago)
 ![GitHub Release](https://img.shields.io/github/v/release/gouef/diago?label=Beta&include_prereleases&filter=*beta*&logoSize=diago)

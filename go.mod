@@ -4,7 +4,7 @@ go 1.23.4
 
 require (
 	github.com/gin-gonic/gin v1.10.0
-	github.com/gouef/router v1.0.2-0.20241218002236-3043031a1ba9
+	github.com/gouef/router v3.0.0
 	github.com/stretchr/testify v1.10.0
 )
 

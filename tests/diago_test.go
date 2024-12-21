@@ -3,16 +3,19 @@ package tests
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gouef/diago"
+	"github.com/gouef/diago/extensions"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 type MockDiagoExtension struct {
-	PanelHtml    string
-	Html         string
-	JSHtml       string
-	BeforeCalled bool
-	AfterCalled  bool
+	PanelHtml        string
+	Html             string
+	JSHtml           string
+	BeforeCalled     bool
+	AfterCalled      bool
+	PanelGenerator   diago.PanelGenerator
+	TemplateProvider diago.TemplateProvider
 }
 
 func (m *MockDiagoExtension) GetPanelHtml(c *gin.Context) string {
@@ -33,6 +36,19 @@ func (m *MockDiagoExtension) BeforeNext(c *gin.Context) {
 
 func (m *MockDiagoExtension) AfterNext(c *gin.Context) {
 	m.AfterCalled = true
+}
+
+func (e *MockDiagoExtension) SetTemplateProvider(provider diago.TemplateProvider) {
+
+}
+func (e *MockDiagoExtension) GetTemplateProvider() diago.TemplateProvider {
+	return extensions.NewDefaultTemplateProvider()
+}
+func (e *MockDiagoExtension) SetPanelGenerator(generator diago.PanelGenerator) {
+
+}
+func (e *MockDiagoExtension) GetPanelGenerator() diago.PanelGenerator {
+	return diago.NewDefaultPanelGenerator()
 }
 
 func TestDiago(t *testing.T) {

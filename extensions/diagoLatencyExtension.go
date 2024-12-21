@@ -22,7 +22,7 @@ type DiagoLatencyExtension struct {
 
 type DefaultLatencyTemplateProvider struct{}
 
-func (p DefaultLatencyTemplateProvider) GetTemplate() string {
+func (p *DefaultLatencyTemplateProvider) GetTemplate() string {
 	return diago.GetDiagoLatencyPanelTemplate()
 }
 
@@ -41,6 +41,18 @@ func NewDiagoLatencyExtension() *DiagoLatencyExtension {
 
 func (e *DiagoLatencyExtension) SetTemplateProvider(provider diago.TemplateProvider) {
 	e.TemplateProvider = provider
+}
+
+func (e *DiagoLatencyExtension) GetTemplateProvider() diago.TemplateProvider {
+	return e.TemplateProvider
+}
+
+func (e *DiagoLatencyExtension) SetPanelGenerator(generator diago.PanelGenerator) {
+	e.PanelGenerator = generator
+}
+
+func (e *DiagoLatencyExtension) GetPanelGenerator() diago.PanelGenerator {
+	return e.PanelGenerator
 }
 
 func (e *DiagoLatencyExtension) GetLatency() time.Duration {

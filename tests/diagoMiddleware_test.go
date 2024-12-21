@@ -3,6 +3,7 @@ package tests
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gouef/diago"
+	"github.com/gouef/diago/extensions"
 	"github.com/gouef/router"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -27,6 +28,19 @@ func (e *MyExtension) GetJSHtml(c *gin.Context) string {
 func (e *MyExtension) BeforeNext(c *gin.Context) {}
 
 func (e *MyExtension) AfterNext(c *gin.Context) {}
+
+func (e *MyExtension) SetTemplateProvider(provider diago.TemplateProvider) {
+
+}
+func (e *MyExtension) GetTemplateProvider() diago.TemplateProvider {
+	return extensions.NewDefaultTemplateProvider()
+}
+func (e *MyExtension) SetPanelGenerator(generator diago.PanelGenerator) {
+
+}
+func (e *MyExtension) GetPanelGenerator() diago.PanelGenerator {
+	return diago.NewDefaultPanelGenerator()
+}
 
 func TestDiagoMiddleware(t *testing.T) {
 	r := gin.Default()

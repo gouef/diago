@@ -2,6 +2,12 @@ name: Generate contributors
 
 on:
   workflow_dispatch:
+    inputs:
+      excludeBot:
+        description: "Exclude actions@github.com from contributors"
+        required: false
+        type: boolean
+        default: false
   schedule:
     - cron: '0 0 * * 1'
   pull_request:
@@ -19,3 +25,5 @@ on:
 jobs:
   update-contributors:
     uses: gouef/github-lib-template/.github/workflows/shared_contributors.yml@main
+    with:
+      excludeBot: ${{ inputs.excludeBot || false}}

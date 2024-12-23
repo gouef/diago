@@ -59,7 +59,7 @@ func (d *Diago) AddContentCharset(charset string) *Diago {
 
 func (d *Diago) ContainsMIME(header string) bool {
 	parts := strings.Split(header, ";")
-	if len(parts) < 1 {
+	if parts[0] == "" {
 		return false
 	}
 	contentType := strings.TrimSpace(parts[0])

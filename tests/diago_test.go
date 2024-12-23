@@ -144,9 +144,9 @@ func TestDiago(t *testing.T) {
 		assert.False(t, newDiago.ContainsMIME("application/json; charset=test"))
 	})
 
-	t.Run("Test ContainsMIME false not contain charset", func(t *testing.T) {
+	t.Run("Test ContainsMIME false empty", func(t *testing.T) {
 		newDiago := diago.NewDiago()
 
-		assert.False(t, newDiago.ContainsMIME("application/json"))
+		assert.False(t, newDiago.ContainsMIME(""))
 	})
 }

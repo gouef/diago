@@ -45,7 +45,7 @@ func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 
 		contentType := writer.Header().Get("Content-Type")
 
-		if contentType == "text/html; charset=utf-8" {
+		if d.ContainsMIME(contentType) {
 			var extensionsHtml []template.HTML
 			var extensionsPanelHtml []template.HTML
 			var extensionsJSHtml []template.HTML
@@ -74,8 +74,10 @@ func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 			writer.buffer.WriteString(diagoPanelHTML)
 		}
 
+		status := c.Writer.Status()
 		c.Writer = originalWriter
 		c.Writer.Write(responseBuffer.Bytes())
+		c.Status(status)
 	}
 }
 

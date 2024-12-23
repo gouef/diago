@@ -30,15 +30,15 @@ func (m *MockPanelGenerator) GenerateHTML(name string, templateProvider diago.Te
 	return "", errors.New("template parsing error")
 }
 
-func TestDiagoMiddleware_GenerateHTML_Error(t *testing.T) {
+func TestDiagoMiddleware_ContentTypeAndCharset(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	mockPanelGenerator := new(MockPanelGenerator)
 
 	r := router.NewRouter()
 	n := r.GetNativeRouter()
 	n.LoadHTMLGlob("templates/*")
+	d := diago.NewDiago()
 
-	middleware := diago.DiagoMiddleware(r, &diago.Diago{PanelGenerator: mockPanelGenerator, TemplateProvider: diago.NewDefaultTemplateProvider()})
+	middleware := diago.DiagoMiddleware(r, d)
 
 	n.Use(middleware)
 
@@ -52,8 +52,131 @@ func TestDiagoMiddleware_GenerateHTML_Error(t *testing.T) {
 
 		r.GetNativeRouter().ServeHTTP(w, req)
 
+		assert.Equal(t, 200, w.Code)
+		assert.Contains(t, w.Body.String(), `<div>OK</div>`)
+	})
+}
+
+func TestDiagoMiddleware_ContentTypeAndCharsetAdd(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	r := router.NewRouter()
+	n := r.GetNativeRouter()
+	n.LoadHTMLGlob("templates/*")
+	d := diago.NewDiago()
+	d.SetAllowedContentTypes(diago.ContentType{
+		Types:    []string{},
+		Charsets: []string{},
+	})
+
+	d.AddContentCharset("utf-8")
+	d.AddContentType(diago.ContentType_HTML)
+
+	middleware := diago.DiagoMiddleware(r, d)
+
+	n.Use(middleware)
+
+	r.AddRouteGet("notfound", "/notfound", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "status.gohtml", gin.H{"content": template.HTML("<div>OK</div>")})
+	})
+
+	t.Run("Test Custom 404 Handler", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/notfound", nil)
+		w := httptest.NewRecorder()
+
+		r.GetNativeRouter().ServeHTTP(w, req)
+
+		assert.Equal(t, 200, w.Code)
+		assert.Contains(t, w.Body.String(), `<div>OK</div>`)
+	})
+}
+
+func TestDiagoMiddleware_ContentTypeAndCharset_NotAllowed(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	r := router.NewRouter()
+	n := r.GetNativeRouter()
+	n.LoadHTMLGlob("templates/*")
+	d := diago.NewDiago()
+	d.SetAllowedContentTypes(diago.ContentType{
+		Types:    []string{},
+		Charsets: []string{},
+	})
+
+	middleware := diago.DiagoMiddleware(r, d)
+
+	n.Use(middleware)
+
+	r.AddRouteGet("notfound", "/notfound", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "status.gohtml", gin.H{"content": template.HTML("<div>OK</div>")})
+	})
+
+	t.Run("Test Custom 404 Handler", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/notfound", nil)
+		w := httptest.NewRecorder()
+
+		r.GetNativeRouter().ServeHTTP(w, req)
+
+		responseResult := w.Body.String()
+		assert.Equal(t, 200, w.Code)
+		assert.Contains(t, responseResult, `<div id="content"><div>OK</div></div>`)
+		assert.NotContains(t, responseResult, "Error generating Diago panel HTML")
+	})
+}
+
+func TestDiagoMiddleware_Handle_404(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	mockPanelGenerator := new(MockPanelGenerator)
+
+	r := router.NewRouter()
+	n := r.GetNativeRouter()
+	n.LoadHTMLGlob("templates/*")
+
+	middleware := diago.DiagoMiddleware(r, &diago.Diago{PanelGenerator: mockPanelGenerator, TemplateProvider: diago.NewDefaultTemplateProvider()})
+
+	n.Use(middleware)
+
+	t.Run("Test Custom 404 Handler", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/notfound", nil)
+		w := httptest.NewRecorder()
+
+		r.GetNativeRouter().ServeHTTP(w, req)
+
+		assert.Equal(t, 404, w.Code)
+	})
+}
+
+func TestDiagoMiddleware_GenerateHTML_Error(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	mockPanelGenerator := new(MockPanelGenerator)
+
+	r := router.NewRouter()
+	n := r.GetNativeRouter()
+	n.LoadHTMLGlob("templates/*")
+
+	middleware := diago.DiagoMiddleware(r, &diago.Diago{
+		PanelGenerator:   mockPanelGenerator,
+		TemplateProvider: diago.NewDefaultTemplateProvider(),
+		AllowedContentTypes: diago.ContentType{
+			Types:    []string{diago.ContentType_PLAIN},
+			Charsets: []string{"*", "utf-8"},
+		},
+	})
+
+	n.Use(middleware)
+
+	r.AddRouteGet("notfound", "/notfound", func(c *gin.Context) {
+		c.String(200, "OK")
+	})
+
+	t.Run("Test Custom 404 Handler", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/notfound", nil)
+		w := httptest.NewRecorder()
+
+		r.GetNativeRouter().ServeHTTP(w, req)
+
 		assert.Equal(t, 500, w.Code)
-		assert.Equal(t, `<div id="content"><div>OK</div></div>Error generating Diago panel HTML`, w.Body.String())
+		assert.Contains(t, w.Body.String(), "Error generating Diago panel HTML")
 	})
 }
 

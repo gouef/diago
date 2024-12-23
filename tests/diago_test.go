@@ -131,4 +131,22 @@ func TestDiago(t *testing.T) {
 
 		assert.Equal(t, "<script>console.log('test');</script>", newDiago.GetExtensions()[0].GetJSHtml(nil))
 	})
+
+	t.Run("Test ContainsMIME", func(t *testing.T) {
+		newDiago := diago.NewDiago()
+
+		assert.True(t, newDiago.ContainsMIME(diago.ContentType_PLAIN))
+	})
+
+	t.Run("Test ContainsMIME false", func(t *testing.T) {
+		newDiago := diago.NewDiago()
+
+		assert.False(t, newDiago.ContainsMIME("application/json; charset=test"))
+	})
+
+	t.Run("Test ContainsMIME false empty", func(t *testing.T) {
+		newDiago := diago.NewDiago()
+
+		assert.False(t, newDiago.ContainsMIME(""))
+	})
 }

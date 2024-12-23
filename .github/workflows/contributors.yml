@@ -1,0 +1,21 @@
+name: Generate contributors
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 1'
+  pull_request:
+    types: [opened, synchronize, edited]
+  push:
+    branches:
+      - master
+      - main
+      - develop
+      - feature/**
+      - release/**
+      - test/**
+      - bugfix/**
+
+jobs:
+  update-contributors:
+    uses: gouef/github-lib-template/.github/workflows/shared_contributors.yml@main

@@ -34,3 +34,5 @@ You can write your own extension, Diago is ready for it!
 You must use interface [DiagoExtension](/diagoExtension.go).
 
 For inspiration I recommend look to exists extensions.
+
+## Contributors

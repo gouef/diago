@@ -8,10 +8,15 @@ on:
         required: false
         type: boolean
         default: false
+      notGenerateContributorsMd:
+        required: false
+        type: boolean
+        default: false
+        description: "Not commit CONTRIBUTORS.md ?"
   schedule:
     - cron: '0 0 * * 1'
   pull_request:
-    types: [opened, synchronize, edited]
+    types: [ opened, synchronize, edited ]
   push:
     branches:
       - master
@@ -27,3 +32,4 @@ jobs:
     uses: gouef/github-lib-template/.github/workflows/shared_contributors.yml@main
     with:
       excludeBot: ${{ inputs.excludeBot || false}}
+      notGenerateContributorsMd: ${{ inputs.notGenerateContributorsMd || false }}

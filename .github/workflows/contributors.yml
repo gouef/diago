@@ -1,18 +1,6 @@
 name: Generate contributors
 
 on:
-  workflow_dispatch:
-    inputs:
-      excludeBot:
-        description: "Exclude actions@github.com from contributors"
-        required: false
-        type: boolean
-        default: false
-      notGenerateContributorsMd:
-        required: false
-        type: boolean
-        default: false
-        description: "Not commit CONTRIBUTORS.md ?"
   schedule:
     - cron: '0 0 * * 1'
   pull_request:
@@ -28,8 +16,10 @@ on:
       - bugfix/**
 
 jobs:
-  update-contributors:
-    uses: gouef/github-lib-template/.github/workflows/shared_contributors.yml@main
-    with:
-      excludeBot: ${{ inputs.excludeBot || false}}
-      notGenerateContributorsMd: ${{ inputs.notGenerateContributorsMd || false }}
+  generate-contributors:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate contributors
+        uses: gouef/create-contributors-action@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -9,13 +9,13 @@ import (
 	"net/http"
 )
 
-type DiagoData struct {
+type Data struct {
 	ExtensionsPanelHtml []template.HTML
 	ExtensionsJSHtml    []template.HTML
 	ExtensionsHtml      []template.HTML
 }
 
-func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
+func Middleware(r *router.Router, d *Diago) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		if r != nil && r.IsRelease() {
@@ -56,7 +56,7 @@ func DiagoMiddleware(r *router.Router, d *Diago) gin.HandlerFunc {
 				extensionsJSHtml = append(extensionsJSHtml, template.HTML(e.GetJSHtml(c)))
 			}
 
-			diagoData := DiagoData{
+			diagoData := Data{
 				ExtensionsHtml:      extensionsHtml,
 				ExtensionsPanelHtml: extensionsPanelHtml,
 				ExtensionsJSHtml:    extensionsJSHtml,

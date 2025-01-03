@@ -49,7 +49,7 @@ func TestDiagoMiddleware(t *testing.T) {
 
 	d.AddExtension(&MyExtension{})
 
-	r.GET("/test", diago.DiagoMiddleware(nil, d), func(c *gin.Context) {
+	r.GET("/test", diago.Middleware(nil, d), func(c *gin.Context) {
 		c.Header("Content-Type", "text/html; charset=utf-8")
 		c.String(200, "Hello, world!")
 	})
@@ -78,7 +78,7 @@ func TestDiagoMiddlewareReleaseMode(t *testing.T) {
 
 	d.AddExtension(&MyExtension{})
 
-	n.GET("/test", diago.DiagoMiddleware(r, d), func(c *gin.Context) {
+	n.GET("/test", diago.Middleware(r, d), func(c *gin.Context) {
 		c.Header("Content-Type", "text/html; charset=utf-8")
 		c.String(200, "Hello, world!")
 	})

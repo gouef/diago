@@ -38,7 +38,7 @@ func TestDiagoMiddleware_ContentTypeAndCharset(t *testing.T) {
 	n.LoadHTMLGlob("templates/*")
 	d := diago.NewDiago()
 
-	middleware := diago.DiagoMiddleware(r, d)
+	middleware := diago.Middleware(r, d)
 
 	n.Use(middleware)
 
@@ -72,7 +72,7 @@ func TestDiagoMiddleware_ContentTypeAndCharsetAdd(t *testing.T) {
 	d.AddContentCharset("utf-8")
 	d.AddContentType(diago.ContentType_HTML)
 
-	middleware := diago.DiagoMiddleware(r, d)
+	middleware := diago.Middleware(r, d)
 
 	n.Use(middleware)
 
@@ -103,7 +103,7 @@ func TestDiagoMiddleware_ContentTypeAndCharset_NotAllowed(t *testing.T) {
 		Charsets: []string{},
 	})
 
-	middleware := diago.DiagoMiddleware(r, d)
+	middleware := diago.Middleware(r, d)
 
 	n.Use(middleware)
 
@@ -132,7 +132,7 @@ func TestDiagoMiddleware_Handle_404(t *testing.T) {
 	n := r.GetNativeRouter()
 	n.LoadHTMLGlob("templates/*")
 
-	middleware := diago.DiagoMiddleware(r, &diago.Diago{PanelGenerator: mockPanelGenerator, TemplateProvider: diago.NewDefaultTemplateProvider()})
+	middleware := diago.Middleware(r, &diago.Diago{PanelGenerator: mockPanelGenerator, TemplateProvider: diago.NewDefaultTemplateProvider()})
 
 	n.Use(middleware)
 
@@ -154,7 +154,7 @@ func TestDiagoMiddleware_GenerateHTML_Error(t *testing.T) {
 	n := r.GetNativeRouter()
 	n.LoadHTMLGlob("templates/*")
 
-	middleware := diago.DiagoMiddleware(r, &diago.Diago{
+	middleware := diago.Middleware(r, &diago.Diago{
 		PanelGenerator:   mockPanelGenerator,
 		TemplateProvider: diago.NewDefaultTemplateProvider(),
 		AllowedContentTypes: diago.ContentType{

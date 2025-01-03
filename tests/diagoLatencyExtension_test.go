@@ -14,7 +14,7 @@ import (
 )
 
 func TestDiagoLatencyExtension(t *testing.T) {
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 
 	r := gin.Default()
 
@@ -43,7 +43,7 @@ func TestDiagoLatencyExtension(t *testing.T) {
 }
 
 func TestDiagoLatencyExtension_GetLatency(t *testing.T) {
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 	latencyExtension.SetLatency(2 * time.Second)
 
 	latency := latencyExtension.GetLatency()
@@ -51,21 +51,21 @@ func TestDiagoLatencyExtension_GetLatency(t *testing.T) {
 }
 
 func TestDiagoLatencyExtension_GetHtml(t *testing.T) {
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 
 	html := latencyExtension.GetHtml(nil)
 	assert.Empty(t, html, "GetHtml should return an empty string")
 }
 
 func TestDiagoLatencyExtension_GetJSHtml(t *testing.T) {
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 
 	jsHtml := latencyExtension.GetJSHtml(nil)
 	assert.Empty(t, jsHtml, "GetJSHtml should return an empty string")
 }
 
 func TestDiagoLatencyExtension_GetPanelHtml_Seconds(t *testing.T) {
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 	latencyExtension.SetLatency(2 * time.Second)
 
 	panelHtml := latencyExtension.GetPanelHtml(nil)
@@ -73,7 +73,7 @@ func TestDiagoLatencyExtension_GetPanelHtml_Seconds(t *testing.T) {
 }
 
 func TestDiagoLatencyExtension_GetPanelHtml_Milliseconds(t *testing.T) {
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 	latencyExtension.SetLatency(150 * time.Millisecond)
 
 	panelHtml := latencyExtension.GetPanelHtml(nil)
@@ -81,7 +81,7 @@ func TestDiagoLatencyExtension_GetPanelHtml_Milliseconds(t *testing.T) {
 }
 
 func TestDiagoLatencyExtension_GetPanelHtml_Microseconds(t *testing.T) {
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 	latencyExtension.SetLatency(500 * time.Microsecond)
 
 	panelHtml := latencyExtension.GetPanelHtml(nil)
@@ -89,7 +89,7 @@ func TestDiagoLatencyExtension_GetPanelHtml_Microseconds(t *testing.T) {
 }
 
 func TestDiagoLatencyExtension_GetPanelHtml_Nanoseconds(t *testing.T) {
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 	latencyExtension.SetLatency(500 * time.Nanosecond)
 
 	panelHtml := latencyExtension.GetPanelHtml(nil)
@@ -103,7 +103,7 @@ func (m *mockDiagoPanelGeneratorWithError) GenerateHTML(name string, templatePro
 }
 
 func TestDiagoLatencyExtension_GetPanelHtml_ErrorHandling(t *testing.T) {
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 
 	gen := &mockDiagoPanelGeneratorWithError{}
 	latencyExtension.PanelGenerator = gen
@@ -134,7 +134,7 @@ func (m *mockTemplateProviderWithExecuteError) GetTemplate() string {
 func TestGenerateDiagoPanelHTML_TemplateParseError(t *testing.T) {
 	mockProvider := &mockTemplateProviderWithParseError{}
 
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 
 	result, err := latencyExtension.PanelGenerator.GenerateHTML("error", mockProvider, extensions.LatencyData{Latency: "500 ms"})
 
@@ -151,7 +151,7 @@ func (m *mockInvalidTemplateProvider) GetDiagoLatencyPanelTemplate() string {
 func TestGenerateDiagoPanelHTML_TemplateExecuteError(t *testing.T) {
 	mockProvider := &mockTemplateProviderWithExecuteError{}
 
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 
 	result, err := latencyExtension.PanelGenerator.GenerateHTML("test", mockProvider, extensions.LatencyData{Latency: "500 ms"})
 
@@ -160,7 +160,7 @@ func TestGenerateDiagoPanelHTML_TemplateExecuteError(t *testing.T) {
 }
 
 func TestDiagoLatencyExtension_TemplateProvider(t *testing.T) {
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 
 	mockProvider := &mockTemplateProviderWithParseError{}
 
@@ -170,7 +170,7 @@ func TestDiagoLatencyExtension_TemplateProvider(t *testing.T) {
 }
 
 func TestDiagoLatencyExtension_PanelGenerator(t *testing.T) {
-	latencyExtension := extensions.NewDiagoLatencyExtension()
+	latencyExtension := extensions.NewLatencyExtension()
 
 	mockProvider := &MockPanelGenerator{}
 

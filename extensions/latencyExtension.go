@@ -13,7 +13,7 @@ type LatencyData struct {
 	Latency string
 }
 
-type DiagoLatencyExtension struct {
+type LatencyExtension struct {
 	startTime        time.Time
 	latency          time.Duration
 	PanelGenerator   diago.PanelGenerator
@@ -30,47 +30,47 @@ func NewDefaultTemplateProvider() *DefaultLatencyTemplateProvider {
 	return &DefaultLatencyTemplateProvider{}
 }
 
-func NewDiagoLatencyExtension() *DiagoLatencyExtension {
+func NewLatencyExtension() *LatencyExtension {
 	generator := diago.NewDefaultPanelGenerator()
 	tmpProvider := NewDefaultTemplateProvider()
-	return &DiagoLatencyExtension{
+	return &LatencyExtension{
 		PanelGenerator:   generator,
 		TemplateProvider: tmpProvider,
 	}
 }
 
-func (e *DiagoLatencyExtension) SetTemplateProvider(provider diago.TemplateProvider) {
+func (e *LatencyExtension) SetTemplateProvider(provider diago.TemplateProvider) {
 	e.TemplateProvider = provider
 }
 
-func (e *DiagoLatencyExtension) GetTemplateProvider() diago.TemplateProvider {
+func (e *LatencyExtension) GetTemplateProvider() diago.TemplateProvider {
 	return e.TemplateProvider
 }
 
-func (e *DiagoLatencyExtension) SetPanelGenerator(generator diago.PanelGenerator) {
+func (e *LatencyExtension) SetPanelGenerator(generator diago.PanelGenerator) {
 	e.PanelGenerator = generator
 }
 
-func (e *DiagoLatencyExtension) GetPanelGenerator() diago.PanelGenerator {
+func (e *LatencyExtension) GetPanelGenerator() diago.PanelGenerator {
 	return e.PanelGenerator
 }
 
-func (e *DiagoLatencyExtension) GetLatency() time.Duration {
+func (e *LatencyExtension) GetLatency() time.Duration {
 	return e.latency
 }
 
-func (e *DiagoLatencyExtension) SetLatency(latency time.Duration) {
+func (e *LatencyExtension) SetLatency(latency time.Duration) {
 	e.latency = latency
 }
 
-func (e *DiagoLatencyExtension) GetHtml(c *gin.Context) string {
+func (e *LatencyExtension) GetHtml(c *gin.Context) string {
 	return ""
 }
-func (e *DiagoLatencyExtension) GetJSHtml(c *gin.Context) string {
+func (e *LatencyExtension) GetJSHtml(c *gin.Context) string {
 	return ""
 }
 
-func (e *DiagoLatencyExtension) GetPanelHtml(c *gin.Context) string {
+func (e *LatencyExtension) GetPanelHtml(c *gin.Context) string {
 
 	var formattedLatency string
 	formattedLatency = formatLatency(e.latency)
@@ -85,10 +85,10 @@ func (e *DiagoLatencyExtension) GetPanelHtml(c *gin.Context) string {
 	return result
 }
 
-func (e *DiagoLatencyExtension) BeforeNext(c *gin.Context) {
+func (e *LatencyExtension) BeforeNext(c *gin.Context) {
 	e.startTime = time.Now()
 }
-func (e *DiagoLatencyExtension) AfterNext(c *gin.Context) {
+func (e *LatencyExtension) AfterNext(c *gin.Context) {
 	e.latency = time.Since(e.startTime)
 }
 

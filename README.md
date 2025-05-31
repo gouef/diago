@@ -3,6 +3,8 @@
 # Diago
 Diago: the addictive tool. Friendly design, logging
 
+[![Static Badge](https://img.shields.io/badge/Github-gouef%2Fdiago-blue?style=for-the-badge&logo=github&link=github.com%2Fgouef%2Fdiago)](https://github.com/gouef/diago)
+
 [![GoDoc](https://pkg.go.dev/badge/github.com/gouef/diago.svg)](https://pkg.go.dev/github.com/gouef/diago)
 [![GitHub stars](https://img.shields.io/github/stars/gouef/diago?style=social)](https://github.com/gouef/diago/stargazers)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gouef/diago)](https://goreportcard.com/report/github.com/gouef/diago)
@@ -49,3 +51,9 @@ For inspiration I recommend look to exists extensions.
 </span>
 </div>
 
+## Join our Discord Community! 🎉
+
+[![Discord](https://img.shields.io/discord/1334331501462163509?style=for-the-badge&logo=discord&logoColor=white&logoSize=auto&label=Community%20discord&labelColor=blue&link=https%3A%2F%2Fdiscord.gg%2FwjGqeWFnqK
+)](https://discord.gg/wjGqeWFnqK)
+
+Click above to join our community on Discord!

@@ -1,0 +1,29 @@
+<svg width="180" height="220" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<style>.text{font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;font-size: 16px;line-height: 1.5;word-wrap: break-word;}</style>
+<defs><mask id="circle-mask"><circle cx="50%" cy="75" r="60" fill="white" /></mask></defs>
+<g>
+<image href="data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAALAAAACwCAMAAACYaRRsAAAAY1BMVEUDZtYjedvQ4/j////f7Poi
+edvg7PrQ4vgTcNiBs+vQ4/egxvBioOXv9f3v9fxxqeigxfCBsuvA2PXA2fWgxu9xqedhn+WBsuqw
+z/Iyg92RvOxin+WhxvBCjODQ4vcTcNmgxe8ggTbcAAADcElEQVR4nOzc/1LbOhDFcYVNQigOcSkQ
+2rg/3v8pO8zkS7AiO9LGrNXOfnz/CEjacyaXTmltGpxzzjnnnHPOOeecc865KSxuJGG5Yr06azr2
+3bJeHRrGWK8OBWOsV4eCMdarQ8EY69WhYIz16lAwxnp1KBhjvToUjLFeHQrGWK8OBWOsV4eCMdar
+Q8EY69WhYIz16lAwxnp1KBhjvToUjLFenZt/rfBi4I8crFfPC3thL+yFvfDVhTd3A78ZTHt9uZ/o
+L+CaLSM/28OOzGvsGGehIVVvYfb+vv33sCFXrWWWja/kTv7t4iddS3LVmGSFXDUGWSFXjUFWyFVj
+kBVy1RhkhVw1BlkhV41BVshVY5AVctUYZIVcNQZZIVeNQVbIVWOQFXLVGGSFXDUGWSFXjUFWyFVj
+kBVy1RhkhVw1BlkhV41BVshVY5AVctUYZIVcNQZZIVeNQVbIVWOQFXLVGGSFXDUGWSFXjUGXbB+/
+8TLH9umWl33kqjHoguVq+CZoQrsJ4ZkPeshVY9C45Wrstu2Z9m13eOHDj8hVY9AonrbNbNyGMNj4
+uDTVc8DjfTMb03fgPe5PzLbW9B2pkOobwuAv1PLnjTk54HH/muobvvPZnu2P/TrVN+z57Bl2ZONg
+2uH0/7PXN/0OL1enew+9vuE12nnCjmwcTDqcyvX7Jr+Gj1va874jd6jYko2DKYfjnpeSviG0cd+G
+LQnsycbBhNPtv5eSviG0+X2n/JJ4ZEss2VcG7242YlT4iS1ZfeWQ2nux75SFHzYlfeWeDUV9pyws
+HXty+g7cP27EsLB0JX2TjRsxLSxdSd9E40aMC0tX0vescSPmhaUr6Rs1bmSGwtKV9O01bmSWwtKV
+9P3QuJGZCktX0ve9cSOzFZaupO+xcSMzFpbXVfiZ3Vdkt9nc8foiemTj4FzokY2Dc6FHNg7OhR7Z
+ODgXemTj4FzokY2Dc6FHrQ/YXf/A3WKtCpro+rVKVMrDCCvkqjHICrlqDLJCrhqDrJCrxiAr5Kox
+yAq5agyyQq4ag6yQq8YgK+SqMcgKuWoMskKuGoOskKvGICvkqjHICrlqxt9lXv8PGO0vRUx7PY23
+ybh+m/7w1HZ1bd/3G5421+5CmSzPZu/x9jDeJPda/LkdzZnIen/9D9M555xzzjnnnHPOOeec+1/9
+HQDxYXndEfGOUwAAAABJRU5ErkJggg==" x="15" y="0" width="150" height="150" mask="url(#circle-mask)" />
+<a href="https://github.com/apps/dependabot">
+<text class="text" x="50%" y="170" dominant-baseline="middle" text-anchor="middle" font-size="16" fill="#4493f8">@dependabot[bot]</text>
+</a>
+<text class="text" x="50%" y="195" dominant-baseline="middle" text-anchor="middle" font-size="14" fill="orange">4</text>
+  </g>
+</svg>
